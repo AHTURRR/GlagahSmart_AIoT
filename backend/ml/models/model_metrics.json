@@ -1,0 +1,109 @@
+{
+  "dataset_info": {
+    "total_samples": 1200,
+    "train_samples": 960,
+    "test_samples": 240,
+    "classes": [
+      "Benih",
+      "Briket Biomassa",
+      "Pupuk Kompos"
+    ],
+    "features": [
+      "ambient_temperature_c",
+      "ambient_humidity_rh",
+      "sample_mass_g",
+      "biomass_moisture_percent",
+      "post_harvest_age_days",
+      "seed_condition_score"
+    ],
+    "status": "Synthetic Baseline Model (Awaiting Laboratory Validation)"
+  },
+  "random_forest": {
+    "accuracy": 0.9958,
+    "report": {
+      "Benih": {
+        "precision": 0.9876543209876543,
+        "recall": 1.0,
+        "f1-score": 0.9937888198757764,
+        "support": 80.0
+      },
+      "Briket Biomassa": {
+        "precision": 1.0,
+        "recall": 0.9875,
+        "f1-score": 0.9937106918238994,
+        "support": 80.0
+      },
+      "Pupuk Kompos": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 80.0
+      },
+      "accuracy": 0.9958333333333333,
+      "macro avg": {
+        "precision": 0.9958847736625515,
+        "recall": 0.9958333333333332,
+        "f1-score": 0.9958331705665585,
+        "support": 240.0
+      },
+      "weighted avg": {
+        "precision": 0.9958847736625515,
+        "recall": 0.9958333333333333,
+        "f1-score": 0.9958331705665586,
+        "support": 240.0
+      }
+    },
+    "feature_importance": {
+      "ambient_temperature_c": 0.0095,
+      "ambient_humidity_rh": 0.1475,
+      "sample_mass_g": 0.0815,
+      "biomass_moisture_percent": 0.3263,
+      "post_harvest_age_days": 0.2459,
+      "seed_condition_score": 0.1892
+    }
+  },
+  "decision_tree": {
+    "accuracy": 0.9958,
+    "report": {
+      "Benih": {
+        "precision": 0.9876543209876543,
+        "recall": 1.0,
+        "f1-score": 0.9937888198757764,
+        "support": 80.0
+      },
+      "Briket Biomassa": {
+        "precision": 1.0,
+        "recall": 0.9875,
+        "f1-score": 0.9937106918238994,
+        "support": 80.0
+      },
+      "Pupuk Kompos": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 80.0
+      },
+      "accuracy": 0.9958333333333333,
+      "macro avg": {
+        "precision": 0.9958847736625515,
+        "recall": 0.9958333333333332,
+        "f1-score": 0.9958331705665585,
+        "support": 240.0
+      },
+      "weighted avg": {
+        "precision": 0.9958847736625515,
+        "recall": 0.9958333333333333,
+        "f1-score": 0.9958331705665586,
+        "support": 240.0
+      }
+    },
+    "feature_importance": {
+      "ambient_temperature_c": 0.0,
+      "ambient_humidity_rh": 0.0096,
+      "sample_mass_g": 0.0,
+      "biomass_moisture_percent": 0.5093,
+      "post_harvest_age_days": 0.4115,
+      "seed_condition_score": 0.0695
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "author": "IDTC AIoT - Probe Pemantau Limbah Glagah (Wi-Fi)",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -105,
+      "left": -170,
+      "attrs": { "temperature": "41.6", "humidity": "65.5" }
+    },
+    {
+      "type": "wokwi-ds18b20",
+      "id": "temp1",
+      "top": -105,
+      "left": -270,
+      "attrs": { "temperature": "57.8" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rpull",
+      "top": -150,
+      "left": -280,
+      "attrs": { "value": "4700" }
+    },
+    { "type": "wokwi-led", "id": "led1", "top": 320, "left": 260, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led2", "top": 320, "left": 310, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "led3", "top": 320, "left": 360, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 260,
+      "left": 255,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 260,
+      "left": 305,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 260,
+      "left": 355,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 184.8,
+      "left": 136.2,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "dht1:SDA", "esp:15", "green", [ "v0" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "temp1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "temp1:DQ", "esp:4", "green", [ "v0" ] ],
+    [ "temp1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "rpull:1", "temp1:DQ", "gold", [ "v0" ] ],
+    [ "rpull:2", "esp:3V3", "red", [ "v0" ] ],
+    [ "esp:25", "r1:1", "green", [ "v0" ] ],
+    [ "r1:2", "led1:A", "green", [ "v0" ] ],
+    [ "led1:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "esp:26", "r2:1", "gold", [ "v0" ] ],
+    [ "r2:2", "led2:A", "gold", [ "v0" ] ],
+    [ "led2:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "esp:27", "r3:1", "red", [ "v0" ] ],
+    [ "r3:2", "led3:A", "red", [ "v0" ] ],
+    [ "led3:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "esp:14", "bz1:2", "magenta", [ "v0" ] ],
+    [ "bz1:1", "esp:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

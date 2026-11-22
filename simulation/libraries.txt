@@ -1,0 +1,6 @@
+# Wokwi Library Manager
+DHT sensor library
+Adafruit Unified Sensor
+OneWire
+DallasTemperature
+PubSubClient
