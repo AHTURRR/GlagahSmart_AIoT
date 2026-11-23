@@ -10,24 +10,28 @@ const config: Config = {
     extend: {
       colors: {
         agri: {
-          primary: "#166534",     // Forest Green
-          primaryLight: "#15803d",
-          primaryDark: "#14532d",
-          emerald: "#10B981",     // Vibrant Emerald
-          emeraldLight: "#34D399",
-          emeraldDark: "#059669",
-          bg: "#F8FAF8",          // Soft Natural Off-White
+          primary: "#24523A",     // Field green
+          primaryLight: "#376D4D",
+          primaryDark: "#173526",
+          emerald: "#6C9A72",     // Verified state, used sparingly
+          emeraldLight: "#BFD9B7",
+          emeraldDark: "#3D704B",
+          bg: "#F4F0E8",          // Warm field paper
           card: "#FFFFFF",
-          dark: "#14251B",        // Deep earthy text
-          muted: "#64748B",       // Slate muted text
-          amber: "#F59E0B",       // Energy/Warning accent
-          amberLight: "#FDE68A",
-          border: "#E2E8F0",
-          surface: "#F0FDF4"
+          dark: "#1E2A21",        // Ink
+          muted: "#6B7169",       // Field note grey
+          amber: "#B9673A",       // Clay / heat
+          amberLight: "#EBC9A8",
+          border: "#D9D2C4",
+          surface: "#E8EFE3",
+          clay: "#B9673A",
+          paper: "#F4F0E8",
+          ink: "#1E2A21",
         }
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Georgia", "Times New Roman", "serif"],
       },
       boxShadow: {
         'soft': '0 4px 20px -2px rgba(22, 101, 52, 0.06), 0 2px 6px -1px rgba(22, 101, 52, 0.04)',

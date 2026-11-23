@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 20, 37, 27;
-  --background-rgb: 248, 250, 248;
+  --foreground-rgb: 30, 42, 33;
+  --background-rgb: 244, 240, 232;
 }
 
 @layer base {
@@ -26,6 +26,8 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-image: radial-gradient(rgba(36, 82, 58, 0.08) 0.6px, transparent 0.6px);
+    background-size: 7px 7px;
   }
 
   button,
@@ -43,6 +45,23 @@
   :focus-visible {
     outline: 3px solid #10b981;
     outline-offset: 3px;
+  }
+}
+
+@layer components {
+  .display-serif {
+    font-family: Georgia, "Times New Roman", serif;
+    letter-spacing: -0.035em;
+  }
+
+  .field-rule {
+    border-top: 1px solid rgba(36, 82, 58, 0.22);
+  }
+
+  .paper-panel {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(36, 82, 58, 0.18);
+    box-shadow: 0 12px 30px rgba(48, 52, 39, 0.06);
   }
 }
 
@@ -65,10 +84,3 @@ html {
   background: #94a3b8;
 }
 
-/* Subtle pattern for hero */
-.agri-grid-pattern {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(22, 101, 52, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(22, 101, 52, 0.05) 1px, transparent 1px);
-}

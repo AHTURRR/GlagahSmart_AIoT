@@ -3,163 +3,79 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  Sprout, 
-  Cpu, 
-  FlaskConical, 
-  Menu, 
-  X, 
-  ChevronRight, 
-  Layers, 
-  BookOpen, 
-  Award 
-} from "lucide-react";
+import { ArrowUpRight, ChevronDown, Menu, Sprout, X } from "lucide-react";
+
+const primaryLinks = [
+  { label: "Masalah", href: "/problem" },
+  { label: "Solusi", href: "/solution" },
+  { label: "Metodologi", href: "/research" },
+  { label: "Dampak", href: "/impact" },
+];
+
+const researchLinks = [
+  { label: "Latar belakang", href: "/background" },
+  { label: "Arsitektur", href: "/technology" },
+  { label: "Referensi", href: "/references" },
+  { label: "Tentang tim", href: "/about" },
+];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [researchOpen, setResearchOpen] = useState(false);
   const pathname = usePathname();
-
-  const navLinks = [
-    { label: "Beranda", href: "/" },
-    { label: "Latar Belakang", href: "/background" },
-    { label: "Masalah", href: "/problem" },
-    { label: "Solusi Inovasi", href: "/solution" },
-    { label: "Metodologi", href: "/research" },
-    { label: "Arsitektur", href: "/technology" },
-    { label: "Manfaat", href: "/impact" },
-    { label: "Referensi", href: "/references" },
-    { label: "Tentang", href: "/about" },
-  ];
-
-  const isActive = (path: string) => {
-    if (path === "/" && pathname === "/") return true;
-    if (path !== "/" && pathname.startsWith(path)) return true;
-    return false;
-  };
+  const isActive = (path: string) => path === "/" ? pathname === "/" : pathname.startsWith(path);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          
-          {/* Logo Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-agri-primary flex items-center justify-center text-white shadow-md shadow-agri-primary/20 group-hover:scale-105 transition-transform">
-              <Sprout className="w-6 h-6 text-agri-emeraldLight" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-xl tracking-tight text-agri-dark">
-                  Glagah<span className="text-agri-primary">Smart</span>
-                </span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-agri-emerald/10 text-agri-primary border border-agri-emerald/20">
-                  AIoT
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 font-medium">
-                IDTC 2.0 • AIoT Future Competition 2026
-              </p>
-            </div>
+    <header className="sticky top-0 z-50 border-b border-agri-primary/15 bg-agri-bg/95 backdrop-blur-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-[4.5rem] items-center justify-between gap-5">
+          <Link href="/" className="group flex min-w-0 items-center gap-3" aria-label="GlagahSmart, kembali ke beranda">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-agri-primary text-agri-emeraldLight transition-transform group-hover:-rotate-6">
+              <Sprout className="h-5 w-5" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate font-display text-lg leading-none text-agri-ink sm:text-xl">Glagah<span className="text-agri-primary">Smart</span></span>
+              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.16em] text-agri-muted">Field dossier · AIoT</span>
+            </span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  isActive(link.href)
-                    ? "text-agri-primary bg-agri-surface font-semibold"
-                    : "text-slate-600 hover:text-agri-primary hover:bg-slate-50"
-                }`}
-              >
+          <nav aria-label="Navigasi utama" className="hidden items-center gap-5 lg:flex">
+            {primaryLinks.map((link) => (
+              <Link key={link.href} href={link.href} className={`relative py-5 text-sm font-semibold transition-colors ${isActive(link.href) ? "text-agri-primary" : "text-agri-muted hover:text-agri-ink"}`}>
                 {link.label}
+                {isActive(link.href) && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-agri-clay" aria-hidden="true" />}
               </Link>
             ))}
+            <div className="relative">
+              <button type="button" onClick={() => setResearchOpen(!researchOpen)} className="flex min-h-11 items-center gap-1 py-2 text-sm font-semibold text-agri-muted transition-colors hover:text-agri-ink" aria-expanded={researchOpen} aria-haspopup="menu">
+                Catatan riset <ChevronDown className={`h-4 w-4 transition-transform ${researchOpen ? "rotate-180" : ""}`} />
+              </button>
+              {researchOpen && <div className="absolute right-0 top-full w-52 border border-agri-primary/15 bg-white p-2 shadow-elevated" role="menu">
+                {researchLinks.map((link) => <Link key={link.href} href={link.href} onClick={() => setResearchOpen(false)} className="flex min-h-11 items-center px-3 text-sm text-agri-muted hover:bg-agri-surface hover:text-agri-primary" role="menuitem">{link.label}</Link>)}
+              </div>}
+            </div>
           </nav>
 
-          {/* CTA Demo Buttons */}
-          <div className="hidden md:flex items-center gap-2.5">
-            <Link
-              href="/simulation"
-              className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border transition-all ${
-                pathname === "/simulation"
-                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                  : "bg-white text-slate-700 border-slate-300 hover:border-slate-400 hover:bg-slate-50"
-              }`}
-            >
-              <Cpu className="w-4 h-4 text-agri-emerald" />
-              <span>Simulasi Wokwi</span>
-            </Link>
-
-            <Link
-              href="/classification"
-              className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg text-white transition-all shadow-sm ${
-                pathname === "/classification"
-                  ? "bg-agri-primaryDark ring-2 ring-agri-emerald"
-                  : "bg-agri-primary hover:bg-agri-primaryLight shadow-agri-primary/20 hover:shadow-md"
-              }`}
-            >
-              <FlaskConical className="w-4 h-4 text-agri-emeraldLight" />
-              <span>Klasifikasi ML</span>
-            </Link>
+          <div className="hidden items-center gap-2 md:flex">
+            <Link href="/simulation" className={`inline-flex min-h-11 items-center gap-2 border px-3 text-xs font-bold transition-colors ${isActive("/simulation") ? "border-agri-primary bg-agri-primary text-white" : "border-agri-primary/25 bg-transparent text-agri-primary hover:bg-white"}`}>Simulasi</Link>
+            <Link href="/classification" className="inline-flex min-h-11 items-center gap-2 bg-agri-clay px-3.5 text-xs font-bold text-white transition-colors hover:bg-[#98502e]">Uji sampel <ArrowUpRight className="h-4 w-4" /></Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="inline-flex min-h-11 items-center gap-2 border border-agri-primary/25 px-3 text-sm font-semibold text-agri-primary md:hidden" aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}<span>Menu</span>
+          </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-6 space-y-3">
-          <div className="grid grid-cols-2 gap-2 pt-2 pb-3 border-b border-slate-100">
-            <Link
-              href="/simulation"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-slate-100 text-xs font-semibold text-slate-800"
-            >
-              <Cpu className="w-4 h-4 text-agri-emerald" />
-              Simulasi Wokwi
-            </Link>
-            <Link
-              href="/classification"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-agri-primary text-xs font-semibold text-white"
-            >
-              <FlaskConical className="w-4 h-4 text-agri-emeraldLight" />
-              Klasifikasi ML
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${
-                  isActive(link.href)
-                    ? "bg-agri-surface text-agri-primary font-semibold"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
-              >
-                <span>{link.label}</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </Link>
-            ))}
-          </div>
+      {mobileMenuOpen && <div id="mobile-navigation" className="border-t border-agri-primary/15 bg-white px-4 pb-5 pt-3 md:hidden">
+        <div className="grid grid-cols-2 gap-2 border-b border-agri-primary/10 pb-4">
+          <Link href="/simulation" onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center justify-center border border-agri-primary/20 text-sm font-bold text-agri-primary">Simulasi</Link>
+          <Link href="/classification" onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center justify-center bg-agri-clay text-sm font-bold text-white">Uji sampel</Link>
         </div>
-      )}
+        <nav aria-label="Navigasi mobile" className="grid gap-1 pt-3">
+          {[...primaryLinks, ...researchLinks].map((link) => <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`flex min-h-11 items-center justify-between border-b border-agri-primary/10 px-2 text-sm font-semibold ${isActive(link.href) ? "text-agri-primary" : "text-agri-muted"}`}>{link.label}<ArrowUpRight className="h-4 w-4" /></Link>)}
+        </nav>
+      </div>}
     </header>
   );
 }
