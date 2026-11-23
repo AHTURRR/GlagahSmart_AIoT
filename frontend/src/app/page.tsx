@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BarChart3, Check, Cpu, FlaskConical, MapPin, Recycle, Sprout } from "lucide-react";
+import { Activity, ArrowRight, ArrowUpRight, BarChart3, Check, Cpu, Droplets, FlaskConical, Gauge, MapPin, Recycle, Sprout, Thermometer } from "lucide-react";
 
 const routes = [
   { title: "Benih", note: "Bahan segar dengan struktur biji yang masih utuh.", signal: "Kadar air 10–18%", icon: Sprout, tone: "text-agri-primary" },
@@ -38,11 +38,12 @@ export default function HomePage() {
               <div><div className="text-xs font-medium text-agri-muted">Status</div><div className="text-sm font-bold text-agri-ink">PoC terkalibrasi</div></div>
             </div>
           </div>
-          <aside className="paper-panel relative p-6 lg:mb-1">
-            <div className="flex items-center justify-between border-b border-agri-primary/15 pb-4 text-xs font-bold uppercase tracking-[0.16em] text-agri-muted"><span>Field note 01</span><span className="text-agri-clay">●</span></div>
-            <p className="display-serif mt-6 text-2xl leading-tight text-agri-ink">“Yang dibuang belum tentu kehilangan nilai.”</p>
-            <p className="mt-6 text-sm leading-6 text-agri-muted">Sistem memulai dari keadaan bahan, bukan dari asumsi produk akhirnya.</p>
-            <div className="mt-8 border-t border-agri-primary/15 pt-4 text-xs text-agri-muted"><span className="font-bold text-agri-primary">3</span> kemungkinan hilirisasi untuk diuji</div>
+          <aside className="paper-panel relative overflow-hidden p-6 lg:mb-1">
+            <div className="flex items-center justify-between border-b border-agri-primary/15 pb-4 text-xs font-bold uppercase tracking-[0.16em] text-agri-muted"><span>Probe reading · 01</span><span className="flex items-center gap-1.5 text-agri-primary"><span className="h-2 w-2 rounded-full bg-agri-emerald" />simulasi</span></div>
+            <div className="mt-6 flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-agri-muted">Kondisi material</p><p className="display-serif mt-1 text-3xl text-agri-ink">Aktif / lembap</p></div><Activity className="h-8 w-8 text-agri-clay" /></div>
+            <div className="mt-7 grid grid-cols-3 gap-2 border-y border-agri-primary/15 py-4 text-center"><div><Thermometer className="mx-auto h-4 w-4 text-agri-clay" /><strong className="mt-2 block text-sm text-agri-ink">28.5°</strong><span className="text-[11px] text-agri-muted">udara</span></div><div><Droplets className="mx-auto h-4 w-4 text-agri-primary" /><strong className="mt-2 block text-sm text-agri-ink">65%</strong><span className="text-[11px] text-agri-muted">kelembapan</span></div><div><Gauge className="mx-auto h-4 w-4 text-agri-emeraldDark" /><strong className="mt-2 block text-sm text-agri-ink">+6.3°</strong><span className="text-[11px] text-agri-muted">delta inti</span></div></div>
+            <svg className="mt-6 h-10 w-full text-agri-primary" viewBox="0 0 280 40" fill="none" role="img" aria-label="Grafik mini perubahan suhu simulasi"><path d="M0 31C19 31 22 28 38 29C54 30 61 20 78 22C95 24 99 14 115 17C131 20 137 10 153 14C169 18 177 9 191 12C205 15 217 6 232 10C247 14 256 5 280 7" stroke="currentColor" strokeWidth="2" /><path d="M0 39H280" stroke="currentColor" strokeOpacity=".2" /></svg>
+            <div className="mt-3 flex items-center justify-between text-xs"><span className="text-agri-muted">ESP32 · Wokwi</span><Link href="/simulation" className="font-bold text-agri-primary hover:text-agri-clay">Buka detail <ArrowUpRight className="inline h-3.5 w-3.5" /></Link></div>
           </aside>
         </div>
       </section>
@@ -51,7 +52,7 @@ export default function HomePage() {
         <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
           <div className="space-y-4"><p className="text-xs font-bold uppercase tracking-[0.18em] text-agri-clay">Keputusan yang ingin dibantu</p><h2 className="display-serif text-4xl leading-tight text-agri-ink sm:text-5xl">Bukan sekadar klasifikasi.</h2><p className="max-w-sm text-sm leading-7 text-agri-muted">Setiap hasil adalah arah kerja berikutnya, bukan klaim akhir. Sampel perlu dibaca bersama konteks dan diuji kembali.</p></div>
           <div className="grid gap-4 md:grid-cols-3">
-            {routes.map((route) => { const Icon = route.icon; return <article key={route.title} className="paper-panel flex min-h-64 flex-col justify-between p-6 transition-transform hover:-translate-y-1"><div><Icon className={`h-7 w-7 ${route.tone}`} /><h3 className="mt-8 font-display text-3xl text-agri-ink">{route.title}</h3><p className="mt-3 text-sm leading-6 text-agri-muted">{route.note}</p></div><p className="mt-8 border-t border-agri-primary/15 pt-3 text-xs font-bold uppercase tracking-[0.12em] text-agri-primary">{route.signal}</p></article>; })}
+            {routes.map((route) => { const Icon = route.icon; return <article key={route.title} className="paper-panel group flex min-h-64 flex-col justify-between p-6 transition-all duration-200 hover:-translate-y-1 hover:border-agri-primary/40 hover:shadow-elevated"><div><div className="flex items-center justify-between"><Icon className={`h-7 w-7 ${route.tone}`} /><ArrowUpRight className="h-4 w-4 text-agri-muted opacity-0 transition-opacity group-hover:opacity-100" /></div><h3 className="mt-8 font-display text-3xl text-agri-ink">{route.title}</h3><p className="mt-3 text-sm leading-6 text-agri-muted">{route.note}</p></div><p className="mt-8 border-t border-agri-primary/15 pt-3 text-xs font-bold uppercase tracking-[0.12em] text-agri-primary">{route.signal}</p></article>; })}
           </div>
         </div>
       </section>
