@@ -31,7 +31,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Georgia", "Times New Roman", "serif"],
+        display: ["Instrument Serif", "Georgia", "Times New Roman", "serif"],
       },
       boxShadow: {
         'soft': '0 4px 20px -2px rgba(22, 101, 52, 0.06), 0 2px 6px -1px rgba(22, 101, 52, 0.04)',

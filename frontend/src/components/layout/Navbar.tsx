@@ -35,7 +35,7 @@ export default function Navbar() {
             </span>
             <span className="min-w-0">
               <span className="block truncate font-display text-lg leading-none text-agri-ink sm:text-xl">Glagah<span className="text-agri-primary">Smart</span></span>
-              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.16em] text-agri-muted">Field dossier · AIoT</span>
+              <span className="mt-1 block text-[11px] font-semibold uppercase tracking-[0.16em] text-agri-muted">Field dossier · AIoT</span>
             </span>
           </Link>
 
@@ -58,7 +58,7 @@ export default function Navbar() {
 
           <div className="hidden items-center gap-2 md:flex">
             <Link href="/simulation" className={`inline-flex min-h-11 items-center gap-2 border px-3 text-xs font-bold transition-colors ${isActive("/simulation") ? "border-agri-primary bg-agri-primary text-white" : "border-agri-primary/25 bg-transparent text-agri-primary hover:bg-white"}`}>Simulasi</Link>
-            <Link href="/classification" className="inline-flex min-h-11 items-center gap-2 bg-agri-clay px-3.5 text-xs font-bold text-white transition-colors hover:bg-[#98502e]">Uji sampel <ArrowUpRight className="h-4 w-4" /></Link>
+            <Link href="/classification" className="inline-flex min-h-11 items-center gap-2 bg-agri-primary px-3.5 text-xs font-bold text-white transition-colors hover:bg-agri-primaryLight">Uji sampel <ArrowUpRight className="h-4 w-4" /></Link>
           </div>
 
           <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="inline-flex min-h-11 items-center gap-2 border border-agri-primary/25 px-3 text-sm font-semibold text-agri-primary md:hidden" aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation">
@@ -70,7 +70,7 @@ export default function Navbar() {
       {mobileMenuOpen && <div id="mobile-navigation" className="border-t border-agri-primary/15 bg-white px-4 pb-5 pt-3 md:hidden">
         <div className="grid grid-cols-2 gap-2 border-b border-agri-primary/10 pb-4">
           <Link href="/simulation" onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center justify-center border border-agri-primary/20 text-sm font-bold text-agri-primary">Simulasi</Link>
-          <Link href="/classification" onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center justify-center bg-agri-clay text-sm font-bold text-white">Uji sampel</Link>
+          <Link href="/classification" onClick={() => setMobileMenuOpen(false)} className="flex min-h-11 items-center justify-center bg-agri-primary text-sm font-bold text-white">Uji sampel</Link>
         </div>
         <nav aria-label="Navigasi mobile" className="grid gap-1 pt-3">
           {[...primaryLinks, ...researchLinks].map((link) => <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`flex min-h-11 items-center justify-between border-b border-agri-primary/10 px-2 text-sm font-semibold ${isActive(link.href) ? "text-agri-primary" : "text-agri-muted"}`}>{link.label}<ArrowUpRight className="h-4 w-4" /></Link>)}

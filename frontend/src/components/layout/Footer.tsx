@@ -33,7 +33,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-agri-bg/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-agri-bg/70 sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} GlagahSmart AIoT Team</span>
           <Link href="/references" className="inline-flex items-center gap-1 hover:text-white">Sumber & standar <ArrowUpRight className="h-3.5 w-3.5" /></Link>
         </div>
