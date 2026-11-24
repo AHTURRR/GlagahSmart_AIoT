@@ -34,8 +34,8 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    background-image: radial-gradient(rgba(36, 82, 58, 0.08) 0.6px, transparent 0.6px);
-    background-size: 7px 7px;
+    background-image: radial-gradient(rgba(36, 82, 58, 0.075) 0.6px, transparent 0.6px);
+    background-size: 8px 8px;
   }
 
   button,
@@ -51,15 +51,16 @@
   }
 
   :focus-visible {
-    outline: 3px solid #10b981;
-    outline-offset: 3px;
+    outline: 2px solid #24523A;
+    outline-offset: 2px;
   }
 }
 
 @layer components {
   .display-serif {
-    font-family: Georgia, "Times New Roman", serif;
-    letter-spacing: -0.035em;
+    font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 
   .field-rule {
@@ -67,9 +68,60 @@
   }
 
   .paper-panel {
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(36, 82, 58, 0.18);
-    box-shadow: 0 12px 30px rgba(48, 52, 39, 0.06);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(36, 82, 58, 0.2);
+  }
+
+  .dossier-note {
+    border-left: 2px solid #B9673A;
+    background: rgba(235, 226, 209, 0.55);
+  }
+
+  .field-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: rgba(30, 42, 33, 0.2);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .field-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #24523A;
+    border: 2px solid #F4F0E8;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .field-range::-webkit-slider-thumb:hover {
+    background: #173526;
+  }
+
+  .field-range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 0;
+    background: #24523A;
+    border: 2px solid #F4F0E8;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .field-range-clay::-webkit-slider-thumb {
+    background: #B9673A;
+  }
+
+  .field-range-clay::-webkit-slider-thumb:hover {
+    background: #98502A;
+  }
+
+  .field-range-clay::-moz-range-thumb {
+    background: #B9673A;
   }
 }
 
@@ -77,18 +129,17 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* Warm field-paper scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #EAE4D7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #B8B09E;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #8C8575;
 }
-

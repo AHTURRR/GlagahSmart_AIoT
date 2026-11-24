@@ -1,148 +1,194 @@
 import React from "react";
 import Link from "next/link";
-import { 
-  Sparkles, 
-  TrendingUp, 
-  Leaf, 
-  ShieldAlert, 
-  CheckCircle2, 
-  ArrowRight,
-  Globe,
-  Award
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import DossierHeader from "@/components/layout/DossierHeader";
+
+const impacts = [
+  {
+    title: "Membantu pengambilan keputusan cepat & terstandar",
+    desc: "Memberi panduan rekomendasi berbasis parameter numerik bagi pengrajin sapu untuk menilai arah pemanfaatan residu harian.",
+  },
+  {
+    title: "Mendukung identifikasi alternatif pengolahan biomassa",
+    desc: "Memperlihatkan kepada UMKM bahwa serbuk rontokan bunga tidak harus dibakar atau dibuang, melainkan dapat dipilah menjadi tiga komoditas berguna.",
+  },
+  {
+    title: "Membuka peluang peningkatan nilai tambah ekonomi",
+    desc: "Menciptakan peluang aliran pendapatan sekunder bagi koperasi desa melalui briket biomassa pengganti kayu bakar dan pupuk kompos organik.",
+  },
+  {
+    title: "Mendukung upaya pengurangan residu pertanian",
+    desc: (
+      <>
+        Mengurangi timbulan biomassa liar dan polusi asap akibat pembakaran
+        terbuka (<em>open burning</em>) di sekitar bengkel pengrajin sapu.
+      </>
+    ),
+  },
+  {
+    title: "Mengembangkan aplikasi Machine Learning yang relevan",
+    desc: "Menunjukkan bahwa Machine Learning di sektor pertanian tidak harus selalu berbasis citra berat, melainkan efektif memakai data fisik-kimia tabular.",
+  },
+  {
+    title: "Fondasi sistem pemilahan mekanis otomatis masa depan",
+    desc: "Parameter dan logika model klasifikasi menjadi dasar perancangan mesin sortasi konveyor pada tahap pengembangan jangka panjang.",
+  },
+];
+
+const sdgs = [
+  {
+    num: "SDG 7",
+    title: "Energi Bersih & Terjangkau",
+    desc: "Produksi briket biomassa berkalori dari residu glagah.",
+  },
+  {
+    num: "SDG 8",
+    title: "Pekerjaan Layak & Pertumbuhan Ekonomi",
+    desc: "Pemberdayaan klaster UMKM sapu rayung Pemalang–Purbalingga.",
+  },
+  {
+    num: "SDG 9",
+    title: "Industri, Inovasi & Infrastruktur",
+    desc: "Penerapan AIoT tepat guna pada sentra industri tradisional.",
+  },
+  {
+    num: "SDG 12",
+    title: "Konsumsi & Produksi Bertanggung Jawab",
+    desc: "Prinsip ekonomi sirkular: pengurangan limbah pengolahan glagah.",
+  },
+  {
+    num: "SDG 13",
+    title: "Penanganan Perubahan Iklim",
+    desc: "Substitusi bahan bakar fosil dan pengurangan emisi pembakaran terbuka.",
+  },
+];
 
 export default function ImpactPage() {
-  const impacts = [
-    {
-      title: "Membantu Pengambilan Keputusan Cepat & Terstandar",
-      desc: "Menghilangkan kebingungan pengrajin sapu dengan panduan rekomendasi berbasis data numerik mengenai potensi hilirisasi residu yang dihasilkan setiap hari."
-    },
-    {
-      title: "Mendukung Identifikasi Alternatif Pengolahan Biomassa",
-      desc: "Membuka wawasan bagi UMKM bahwa sisa rontokan bunga tidak harus dibakar atau dibuang, melainkan dapat dipilah menjadi tiga komoditas bernilai tinggi."
-    },
-    {
-      title: "Membuka Peluang Peningkatan Nilai Tambah Ekonomi",
-      desc: "Menciptakan aliran pendapatan sekunder bagi koperasi desa melalui produksi briket biomassa pengganti kayu bakar dan penyediaan pupuk kompos organik."
-    },
-    {
-      title: "Mendukung Upaya Pengurangan Residu Pertanian",
-      desc: "Mengurangi timbulan biomassa liar dan polusi asap akibat pembakaran terbuka (*open burning*) di sekitar bengkel pengrajin sapu."
-    },
-    {
-      title: "Mengembangkan Aplikasi Machine Learning yang Relevan",
-      desc: "Membuktikan bahwa Machine Learning di sektor pertanian tidak harus selalu berbasis citra berat, melainkan sangat efektif menggunakan data fisik-kimia tabular."
-    },
-    {
-      title: "Fondasi Sistem Pemilahan Mekanis Otomatis Masa Depan",
-      desc: "Data parameter dan logika model klasifikasi ini menjadi dasar desain mesin sortasi konveyor otomatis pada roadmap pengembangan jangka panjang."
-    }
-  ];
-
-  const sdgs = [
-    { num: "SDG 7", title: "Energi Bersih & Terjangkau", desc: "Produksi briket biomassa berkalori dari residu glagah." },
-    { num: "SDG 8", title: "Pekerjaan Layak & Pertumbuhan Ekonomi", desc: "Pemberdayaan klaster UMKM sapu rayung Pemalang-Purbalingga." },
-    { num: "SDG 9", title: "Industri, Inovasi & Infrastruktur", desc: "Penerapan AIoT tepat guna pada sentra industri tradisional." },
-    { num: "SDG 12", title: "Konsumsi & Produksi Bertanggung Jawab", desc: "Prinsip ekonomi sirkular: Zero waste pemanfaatan glagah." },
-    { num: "SDG 13", title: "Penanganan Perubahan Iklim", desc: "Substitusi bahan bakar fosil dan pengurangan emisi pembakaran." },
-  ];
-
   return (
-    <div className="py-12 bg-agri-bg min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Header */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agri-surface border border-agri-emerald/30 text-agri-primary text-xs font-semibold">
-            <TrendingUp className="w-4 h-4 text-agri-emerald" />
-            <span>Dampak & Keberlanjutan</span>
+    <div className="pb-20">
+      <DossierHeader
+        eyebrow="Dampak & keberlanjutan"
+        title={
+          <>
+            Arah manfaat tanpa{" "}
+            <span className="text-agri-primary">angka yang dibuat-buat.</span>
+          </>
+        }
+        summary="Memetakan nilai tambah kualitatif bagi pengrajin lokal, lingkungan sekitar bengkel sapu, serta keselarasan inovasi terhadap tujuan pembangunan berkelanjutan."
+        maxWidthClass="max-w-6xl"
+      />
+
+      <div className="mx-auto max-w-6xl space-y-14 px-4 pt-10 sm:px-6 lg:px-8">
+        {/* Quantitative Claims Boundary */}
+        <div className="dossier-note grid gap-3 px-5 py-5 md:grid-cols-[13.5rem_1fr]">
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-clay">
+              Batasan klaim angka
+            </p>
+            <p className="mt-0.5 text-xs text-agri-muted">
+              Etika ilmiah IDTC 2.0
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-agri-dark tracking-tight">
-            Manfaat & Dampak Inovasi GlagahSmart
-          </h1>
-          <p className="text-slate-600 text-base leading-relaxed">
-            Menghadirkan dampak multifaset bagi pengrajin lokal, kelestarian lingkungan hidup, dan kemajuan riset agriteknologi tepat guna.
+          <p className="text-sm leading-7 text-agri-ink">
+            GlagahSmart AIoT{" "}
+            <strong>
+              secara sadar tidak mencantumkan persentase fiktif peningkatan
+              pendapatan ekonomi atau persentase reduksi limbah
+            </strong>{" "}
+            sebelum validasi empiris lapangan diselesaikan secara utuh. Dampak
+            di halaman ini adalah analisis potensi nilai tambah kualitatif dan
+            arah kebermanfaatan jangka panjang.
           </p>
         </div>
 
-        {/* Peringatan Integritas Ilmiah Terkait Klaim Angka */}
-        <div className="p-5 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-950 flex items-start gap-3.5 shadow-sm">
-          <ShieldAlert className="w-5 h-5 text-agri-amber shrink-0 mt-0.5" />
-          <div className="space-y-1 text-xs">
-            <strong className="font-bold text-amber-900 block text-sm">
-              Batasan Klaim Kuantitatif (Scientific Integrity Note):
-            </strong>
-            <p className="leading-relaxed text-amber-800">
-              Sesuai kaidah etika ilmiah kompetisi IDTC 2.0, platform GlagahSmart AIoT <strong>secara sadar tidak mencantumkan persentase fiktif peningkatan pendapatan ekonomi atau persentase reduksi limbah</strong> sebelum studi validasi empiris di lapangan diselesaikan secara utuh. Dampak yang kami paparkan merupakan analisis potensi nilai tambah kualitatif dan arah kebermanfaatan jangka panjang.
+        {/* Six Potential Benefits */}
+        <section className="space-y-6">
+          <div className="space-y-1">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+              Potensi manfaat
+            </p>
+            <h2 className="display-serif text-3xl text-agri-ink sm:text-4xl">
+              Enam kontribusi utama inovasi.
+            </h2>
+          </div>
+
+          <div className="grid border-t border-agri-primary/20 md:grid-cols-2">
+            {impacts.map((imp, idx) => (
+              <article
+                key={idx}
+                className={`border-b border-agri-primary/15 py-6 ${
+                  idx % 2 === 0
+                    ? "md:border-r md:pr-8"
+                    : "md:pl-8"
+                }`}
+              >
+                <div className="flex items-baseline gap-3">
+                  <span className="display-serif text-3xl leading-none text-agri-clay">
+                    0{idx + 1}
+                  </span>
+                  <h3 className="text-base font-bold text-agri-ink">
+                    {imp.title}
+                  </h3>
+                </div>
+                <p className="mt-2.5 pl-9 text-sm leading-7 text-agri-muted">
+                  {imp.desc}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* SDGs Alignment Ledger */}
+        <section className="grid gap-8 border-t border-agri-primary/20 pt-12 lg:grid-cols-[0.65fr_1.35fr]">
+          <div className="space-y-3">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+              Penyelarasan global
+            </p>
+            <h2 className="display-serif text-3xl leading-tight text-agri-ink sm:text-4xl">
+              Lima target SDGs yang terhubung.
+            </h2>
+            <p className="text-sm leading-7 text-agri-muted">
+              Setiap pilar merujuk langsung pada jalur pemanfaatan residu
+              glagah dan konteks UMKM Pemalang–Purbalingga.
             </p>
           </div>
-        </div>
 
-        {/* 6 Manfaat Utama Inovasi */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-agri-dark">
-            Enam Potensi Manfaat Utama Inovasi
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {impacts.map((imp, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-2 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="w-8 h-8 rounded-lg bg-agri-surface text-agri-primary font-bold text-xs flex items-center justify-center">
-                    0{idx + 1}
-                  </div>
-                  <h3 className="font-bold text-sm text-agri-dark">{imp.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{imp.desc}</p>
+          <div className="divide-y divide-agri-primary/15 border-y border-agri-primary/20 bg-white/60">
+            {sdgs.map((s) => (
+              <div
+                key={s.num}
+                className="grid gap-3 px-4 py-4 sm:grid-cols-[5.5rem_1fr] sm:items-baseline"
+              >
+                <span className="font-mono text-xs font-bold text-agri-primary">
+                  {s.num}
+                </span>
+                <div>
+                  <h3 className="text-sm font-bold text-agri-ink">{s.title}</h3>
+                  <p className="mt-0.5 text-xs leading-6 text-agri-muted">
+                    {s.desc}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Penyelarasan SDGs (Sustainable Development Goals) */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-soft space-y-6">
-          <div className="space-y-2">
-            <span className="text-xs font-bold text-agri-primary uppercase tracking-wider">
-              Kontribusi Global
-            </span>
-            <h2 className="text-2xl font-bold text-agri-dark flex items-center gap-2">
-              <Globe className="w-6 h-6 text-agri-emerald" />
-              Penyelarasan dengan Target SDGs
-            </h2>
-            <p className="text-xs text-slate-600">
-              Inovasi GlagahSmart AIoT mendukung 5 pilar pembangunan berkelanjutan PBB:
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sdgs.map((s, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <span className="text-[10px] font-bold text-agri-primary bg-agri-surface px-2 py-0.5 rounded">
-                  {s.num}
-                </span>
-                <h4 className="font-bold text-xs text-agri-dark pt-1">{s.title}</h4>
-                <p className="text-[11px] text-slate-600 leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="flex items-center justify-between pt-4">
+        {/* Footer Navigation */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-agri-primary/20 pt-6 text-xs font-semibold">
           <Link
             href="/technology"
-            className="text-xs font-semibold text-slate-600 hover:text-agri-primary"
+            className="text-agri-muted transition-colors hover:text-agri-primary"
           >
             ← Kembali ke Arsitektur Sistem
           </Link>
           <Link
             href="/references"
-            className="flex items-center gap-1.5 text-xs font-bold text-agri-primary hover:text-agri-primaryLight"
+            className="inline-flex items-center gap-1.5 font-bold text-agri-primary hover:text-agri-clay"
           >
-            <span>Lanjut ke Referensi & Standar SNI</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Lanjut ke Referensi &amp; Standar SNI</span>
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-
       </div>
     </div>
   );

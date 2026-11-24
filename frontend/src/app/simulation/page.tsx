@@ -3,21 +3,15 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Cpu,
-  Thermometer,
-  Droplets,
-  Flame,
-  Activity,
   RefreshCw,
   ArrowRight,
-  CheckCircle2,
-  AlertTriangle,
+  Check,
   Send,
   Volume2,
-  Gauge,
 } from "lucide-react";
 import { TelemetryData, PresetSample } from "@/lib/types";
 import { BACKEND_URL } from "@/lib/utils";
+import DossierHeader from "@/components/layout/DossierHeader";
 import WokwiCircuitView, {
   WokwiLiveState,
 } from "@/components/simulation/WokwiCircuitView";
@@ -26,7 +20,7 @@ import WokwiCircuitView, {
 const FALLBACK_PRESETS: PresetSample[] = [
   {
     id: "preset-briquette-purbalingga",
-    title: "Residu Serbuk Rontokan Kering - Bojongsari, Purbalingga",
+    title: "Residu Serbuk Rontokan Kering — Bojongsari, Purbalingga",
     origin: "Sentra Pengrajin Sapu Bojongsari, Purbalingga",
     target_hypothesis: "CENDERUNG KERING → Briket Biomassa / Benih (LED Hijau)",
     description:
@@ -41,7 +35,7 @@ const FALLBACK_PRESETS: PresetSample[] = [
   },
   {
     id: "preset-seed-pemalang",
-    title: "Sampel Bunga Segar Pilihan - Belik, Pemalang",
+    title: "Sampel Bunga Segar Pilihan — Belik, Pemalang",
     origin: "Kecamatan Belik, Kabupaten Pemalang",
     target_hypothesis: "TIDAK PASTI / CEK ULANG → Kandidat Benih Segar (LED Kuning)",
     description:
@@ -56,7 +50,7 @@ const FALLBACK_PRESETS: PresetSample[] = [
   },
   {
     id: "preset-compost-bantarbolang",
-    title: "Tumpukan Malai Basah Fermentasi - Bantarbolang, Pemalang",
+    title: "Tumpukan Malai Basah Fermentasi — Bantarbolang, Pemalang",
     origin: "Area Penumpukan Bahan Bantarbolang, Pemalang",
     target_hypothesis: "AKTIF/LEMBAP → Pupuk Kompos Organik (LED Merah)",
     description:
@@ -109,6 +103,7 @@ export default function SimulationPage() {
   const router = useRouter();
   const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
   const [presets, setPresets] = useState<PresetSample[]>(FALLBACK_PRESETS);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [backendOnline, setBackendOnline] = useState<boolean>(true);
   const [isSimulatingSending, setIsSimulatingSending] = useState(false);
@@ -117,14 +112,13 @@ export default function SimulationPage() {
   );
 
   // Kontrol interaktif sensor (sinkron langsung ke visual Wokwi di atas)
-  const [customCoreTemp, setCustomCoreTemp] = useState("57.8"); // DS18B20 default dari diagram.json
-  const [customTemp, setCustomTemp] = useState("41.6"); // DHT22 default dari diagram.json
-  const [customHumidity, setCustomHumidity] = useState("65.5"); // DHT22 default dari diagram.json
-  const [customTrend, setCustomTrend] = useState("1.2"); // Tren perubahan ΔT
+  const [customCoreTemp, setCustomCoreTemp] = useState("57.8");
+  const [customTemp, setCustomTemp] = useState("41.6");
+  const [customHumidity, setCustomHumidity] = useState("65.5");
+  const [customTrend, setCustomTrend] = useState("1.2");
   const [customMass, setCustomMass] = useState("95.0");
   const [customMoisture, setCustomMoisture] = useState("38.5");
 
-  // State reaktif langsung untuk WokwiCircuitView (berubah real-time saat slider digeser)
   const liveProbeState: WokwiLiveState = useMemo(() => {
     const cTemp = parseFloat(customCoreTemp) || 35.0;
     const aTemp = parseFloat(customTemp) || 28.5;
@@ -146,7 +140,6 @@ export default function SimulationPage() {
     telemetry?.node_id,
   ]);
 
-  // Fetch telemetry dari FastAPI backend
   const fetchTelemetry = async () => {
     setLoading(true);
     try {
@@ -160,32 +153,32 @@ export default function SimulationPage() {
       }
     } catch {
       setBackendOnline(false);
-      setTelemetry((prev) =>
-        prev || {
-          node_id: "ESP32-GLAGAH-PROBE-01",
-          location:
-            "Sentra Kerajinan Sapu Bojongsari, Purbalingga (Local Mode)",
-          ambient_temperature_c: parseFloat(customTemp),
-          ambient_humidity_rh: parseFloat(customHumidity),
-          core_temperature_c: parseFloat(customCoreTemp),
-          delta_temperature_c: liveProbeState.delta,
-          trend_c: liveProbeState.trend,
-          score: liveProbeState.score,
-          hardware_class: liveProbeState.hardwareClass,
-          hardware_recommendation: liveProbeState.recommendation,
-          high_temperature_warning: liveProbeState.highTempWarning,
-          sample_mass_g: parseFloat(customMass),
-          biomass_moisture_sim_percent: parseFloat(customMoisture),
-          simulation_source: "Wokwi-ESP32-Probe (Local Interactive Simulation)",
-          received_at: new Date().toLocaleTimeString("id-ID"),
-        }
+      setTelemetry(
+        (prev) =>
+          prev || {
+            node_id: "ESP32-GLAGAH-PROBE-01",
+            location:
+              "Sentra Kerajinan Sapu Bojongsari, Purbalingga (Mode Lokal)",
+            ambient_temperature_c: parseFloat(customTemp),
+            ambient_humidity_rh: parseFloat(customHumidity),
+            core_temperature_c: parseFloat(customCoreTemp),
+            delta_temperature_c: liveProbeState.delta,
+            trend_c: liveProbeState.trend,
+            score: liveProbeState.score,
+            hardware_class: liveProbeState.hardwareClass,
+            hardware_recommendation: liveProbeState.recommendation,
+            high_temperature_warning: liveProbeState.highTempWarning,
+            sample_mass_g: parseFloat(customMass),
+            biomass_moisture_sim_percent: parseFloat(customMoisture),
+            simulation_source: "Wokwi-ESP32-Probe (Simulasi Lokal)",
+            received_at: new Date().toLocaleTimeString("id-ID"),
+          }
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch presets
   const fetchPresets = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/v1/telemetry/presets`);
@@ -205,7 +198,6 @@ export default function SimulationPage() {
     fetchPresets();
   }, []);
 
-  // Handler kirim simulasi dari web ke backend FastAPI (dengan fallback lokal)
   const handleSimulatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSimulatingSending(true);
@@ -244,11 +236,10 @@ export default function SimulationPage() {
       setBackendOnline(true);
       setTelemetry(resData.sample);
       setSendSuccessMessage(
-        "Payload probe ESP32 berhasil dikirim & disinkronkan ke backend FastAPI!"
+        "Payload probe ESP32 tersinkronkan ke backend FastAPI."
       );
       setTimeout(() => setSendSuccessMessage(null), 4000);
     } catch {
-      // Tetap perbarui state lokal secara mulus saat demo offline
       setBackendOnline(false);
       setTelemetry({
         node_id: payload.node_id,
@@ -264,11 +255,11 @@ export default function SimulationPage() {
         high_temperature_warning: payload.suhu_tinggi,
         sample_mass_g: payload.sample_mass_g,
         biomass_moisture_sim_percent: payload.biomass_moisture_sim_percent,
-        simulation_source: "Wokwi Probe Simulator (Offline Local Buffer)",
+        simulation_source: "Wokwi Probe Simulator (Buffer Lokal)",
         received_at: new Date().toLocaleTimeString("id-ID"),
       });
       setSendSuccessMessage(
-        "Buffer lokal diperbarui (mode offline tanpa backend)!"
+        "Buffer lokal diperbarui (mode offline tanpa backend)."
       );
       setTimeout(() => setSendSuccessMessage(null), 4000);
     } finally {
@@ -276,8 +267,8 @@ export default function SimulationPage() {
     }
   };
 
-  // Handler pilih preset lapangan
   const handleSelectPreset = async (preset: PresetSample) => {
+    setActivePresetId(preset.id);
     const coreT = preset.core_temperature_c ?? preset.ambient_temperature_c + 2.0;
     const trendVal = coreT - preset.ambient_temperature_c >= 5.0 ? 1.2 : 0.0;
     const evaluated = evaluateEdgeFirmwareLogic(
@@ -324,7 +315,7 @@ export default function SimulationPage() {
         const data = await res.json();
         setBackendOnline(true);
         setTelemetry(data.sample);
-        setSendSuccessMessage(`Preset "${preset.title}" aktif pada rangkaian & buffer!`);
+        setSendSuccessMessage(`Preset "${preset.title}" diterapkan pada rangkaian.`);
         setTimeout(() => setSendSuccessMessage(null), 3500);
         return;
       }
@@ -349,12 +340,12 @@ export default function SimulationPage() {
       simulation_source: payload.simulation_source,
       received_at: new Date().toLocaleTimeString("id-ID"),
     });
-    setSendSuccessMessage(`Preset "${preset.title}" aktif di rangkaian visual!`);
+    setSendSuccessMessage(`Preset "${preset.title}" aktif pada skematik.`);
     setTimeout(() => setSendSuccessMessage(null), 3500);
   };
 
-  // Uji cepat skenario Alarm Suhu Tumpukan >= 60°C (Buzzer)
   const handleTriggerHighTempTest = () => {
+    setActivePresetId("overheat-test");
     setCustomCoreTemp("63.5");
     setCustomTemp("31.0");
     setCustomHumidity("84.0");
@@ -362,7 +353,6 @@ export default function SimulationPage() {
     setCustomMoisture("48.0");
   };
 
-  // Forward data ke halaman Klasifikasi ML
   const handleForwardToClassification = () => {
     const query = new URLSearchParams({
       temp: liveProbeState.ambientTemp.toString(),
@@ -376,445 +366,535 @@ export default function SimulationPage() {
     router.push(`/classification?${query.toString()}`);
   };
 
+  const classAccent =
+    liveProbeState.hardwareClass === "CENDERUNG KERING"
+      ? "border-agri-primary text-agri-primary bg-agri-surface/70"
+      : liveProbeState.hardwareClass === "AKTIF/LEMBAP"
+      ? "border-agri-clay text-agri-clay bg-[#F5E6DC]"
+      : "border-agri-ink/30 text-agri-ink bg-agri-bg";
+
   return (
-    <div className="py-12 bg-agri-bg min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        {/* Header Section */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agri-surface border border-agri-emerald/30 text-agri-primary text-xs font-semibold">
-            <Cpu className="w-4 h-4 text-agri-emerald" />
-            <span>Fase 1: Desain Perangkat Keras & Akuisisi Sensor Probe</span>
+    <div className="pb-20">
+      <DossierHeader
+        eyebrow="Instrumen probe · Fase 01"
+        title={
+          <>
+            Simulasi rangkaian{" "}
+            <span className="text-agri-primary">ESP32 Wokwi.</span>
+          </>
+        }
+        summary={
+          <>
+            Rangkaian <strong>Probe Pemantau Limbah Bunga Glagah</strong>{" "}
+            berbasis ESP32 DevKit-C v4 dengan sensor suhu inti tumpukan{" "}
+            <strong>DS18B20</strong> (OneWire + Pull-Up 4.7kΩ), sensor udara{" "}
+            <strong>DHT22</strong>, tiga indikator LED lokal, dan piezo buzzer.
+          </>
+        }
+        aside={
+          <div className="paper-panel p-4">
+            <div className="flex items-center justify-between border-b border-agri-primary/15 pb-3 text-[11px] font-bold uppercase tracking-[0.14em]">
+              <span className="text-agri-muted">Status kanal</span>
+              <span className="inline-flex items-center gap-1.5 text-agri-ink">
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    backendOnline ? "bg-agri-emerald" : "bg-agri-clay"
+                  }`}
+                />
+                {backendOnline ? "API terhubung" : "Mode lokal"}
+              </span>
+            </div>
+            <div className="mt-3 space-y-1 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-agri-muted">Node</span>
+                <span className="font-mono font-semibold text-agri-ink">
+                  {liveProbeState.nodeId}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-agri-muted">Sinkronisasi</span>
+                <span className="font-mono text-agri-ink">
+                  {telemetry?.received_at || "Real-time"}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={fetchTelemetry}
+              disabled={loading}
+              className="mt-3 flex min-h-9 w-full items-center justify-center gap-1.5 border border-agri-primary/25 bg-white px-3 text-xs font-semibold text-agri-primary transition-colors hover:bg-agri-bg disabled:opacity-60"
+            >
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`}
+              />
+              <span>Muat ulang telemetri</span>
+            </button>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-agri-dark tracking-tight">
-            Simulasi & Rangkaian IoT Wokwi (ESP32 Probe)
-          </h1>
-          <p className="text-slate-600 max-w-3xl text-base leading-relaxed">
-            Visualisasi skematik rangkaian lengkap <strong>Probe Pemantau Limbah Bunga Glagah</strong> berbasis <strong>ESP32 DevKit-C v4</strong>, sensor suhu tumpukan <strong>DS18B20</strong> (OneWire + Pull-Up 4.7kΩ), sensor udara <strong>DHT22</strong>, indikator <strong>3x LED + Resistor 330Ω</strong>, dan <strong>Piezo Buzzer</strong> dengan transmisi Wi-Fi MQTT.
+        }
+      />
+
+      <div className="mx-auto max-w-7xl space-y-12 px-4 pt-8 sm:px-6 lg:px-8">
+        {/* Editorial Scientific Integrity Strip */}
+        <div className="dossier-note grid gap-3 px-5 py-4 md:grid-cols-[13.5rem_1fr] md:items-start">
+          <div>
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-agri-clay">
+              Batasan data & fisis
+            </p>
+            <p className="mt-0.5 text-xs text-agri-muted">
+              Prinsip kejujuran ilmiah
+            </p>
+          </div>
+          <p className="text-xs leading-6 text-agri-ink sm:text-sm">
+            Seluruh pembacaan di bawah adalah <strong>data simulasi</strong>{" "}
+            untuk menguji logika tepi (<em>edge inference</em>) dan alur MQTT.{" "}
+            <strong>Kelembapan Relatif Udara (% RH)</strong> dari DHT22 hanya
+            mengukur udara sekitar kepala probe dan{" "}
+            <strong>tidak sama</strong> dengan{" "}
+            <strong>Kadar Air Biomassa (% MC)</strong>. Indikasi fermentasi
+            tumpukan dibaca dari selisih suhu inti terhadap suhu udara (
+            <span className="font-mono font-semibold">
+              ΔT = T<sub>tumpuk</sub> − T<sub>udara</sub>
+            </span>
+            ).
           </p>
         </div>
 
-        {/* Warning & Scientific Integrity Alert */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-900 flex items-start gap-4 shadow-sm">
-          <AlertTriangle className="w-6 h-6 text-agri-amber shrink-0 mt-0.5" />
-          <div className="space-y-1 text-sm">
-            <h4 className="font-bold text-amber-950">
-              Prinsip Integritas Ilmiah & Fisis Sensor (Scientific Honesty)
-            </h4>
-            <p className="text-amber-800 leading-relaxed">
-              Seluruh pembacaan di Wokwi merupakan <strong>data simulasi</strong> untuk memvalidasi logika algoritma tepi (<em>edge inference</em>) dan alur transmisi data. <strong>Kelembapan Relatif Udara (% RH)</strong> dari DHT22 mengukur udara sekitar kepala alat dan <strong>TIDAK SAMA</strong> dengan <strong>Kadar Air Biomassa (% MC)</strong>. Indikator aktivitas fermentasi tumpukan dideteksi dari selisih suhu inti tumpukan DS18B20 terhadap suhu udara (<strong>&Delta;T = T<sub>tumpuk</sub> &minus; T<sub>udara</sub></strong>).
-            </p>
-          </div>
-        </div>
-
-        {/* ==================== KOMPONEN UTAMA: WOKWI CIRCUIT DESIGN & LIVE EMBED ==================== */}
+        {/* Main Interactive Hardware Workbench */}
         <WokwiCircuitView liveState={liveProbeState} />
 
-        {/* Live Telemetry Cards + Controls Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Kolom Kiri: Kartu Pembacaan Sensor Probe Terkini (2 Cols) */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-soft space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-agri-surface flex items-center justify-center text-agri-primary">
-                    <Activity className="w-5 h-5 text-agri-emerald animate-pulse" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-agri-dark">
-                      Pembacaan Parameter Probe & Status Edge
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Node:{" "}
-                      <span className="font-mono font-semibold text-slate-700">
-                        {liveProbeState.nodeId}
-                      </span>{" "}
-                      •{" "}
-                      <span>
-                        {telemetry?.simulation_source ||
-                          "Wokwi-ESP32-Probe Interactive"}
-                      </span>
-                    </p>
-                  </div>
+        {/* Telemetry Readout Ledger & Interactive Controls Workbench */}
+        <section className="grid gap-10 lg:grid-cols-[1.22fr_0.78fr] lg:items-start">
+          {/* Left: Measurement Sheet + Field Sample Presets */}
+          <div className="space-y-10">
+            {/* Measurement Matrix */}
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-agri-primary/20 pb-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+                    Pembacaan instrumen
+                  </p>
+                  <h2 className="display-serif mt-1 text-3xl text-agri-ink">
+                    Parameter probe & keputusan tepi
+                  </h2>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={fetchTelemetry}
-                    disabled={loading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                  >
-                    <RefreshCw
-                      className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
-                    />
-                    <span>Refresh</span>
-                  </button>
-                  <span
-                    className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
-                      backendOnline
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : "bg-amber-50 text-amber-700 border-amber-200"
-                    }`}
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        backendOnline
-                          ? "bg-emerald-500 animate-ping"
-                          : "bg-amber-500"
-                      }`}
-                    />
-                    {backendOnline ? "API Online" : "Simulasi Lokal"}
-                  </span>
-                </div>
+                <span className="font-mono text-xs text-agri-muted">
+                  {telemetry?.simulation_source ||
+                    "Wokwi-ESP32-Probe Interactive"}
+                </span>
               </div>
 
-              {/* Grid 4 Kartu Parameter Sensor Probe */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* 1. Suhu Inti Tumpukan (DS18B20) */}
+              <div className="grid border border-agri-primary/20 bg-white/80 sm:grid-cols-2">
+                {/* 1. Core Temp */}
                 <div
-                  className={`p-4 rounded-xl border space-y-2 ${
-                    liveProbeState.highTempWarning
-                      ? "bg-rose-50 border-rose-300"
-                      : "bg-slate-50 border-slate-200/80"
+                  className={`border-b border-agri-primary/15 p-5 sm:border-r ${
+                    liveProbeState.highTempWarning ? "bg-[#F8EAE3]" : ""
                   }`}
                 >
-                  <div className="flex items-center justify-between text-slate-500 text-xs">
-                    <span className="font-medium">
-                      Suhu Inti Tumpukan (DS18B20 • GPIO 4)
-                    </span>
-                    <Flame
-                      className={`w-4 h-4 ${
-                        liveProbeState.highTempWarning
-                          ? "text-rose-600 animate-bounce"
-                          : "text-orange-500"
-                      }`}
-                    />
+                  <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-agri-muted">
+                    <span>Suhu inti tumpukan</span>
+                    <span>DS18B20 · GPIO 4</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-extrabold text-agri-dark">
+                  <div className="mt-3 flex items-baseline gap-1.5 tabular-nums">
+                    <span
+                      className={`display-serif text-5xl leading-none ${
+                        liveProbeState.highTempWarning
+                          ? "text-agri-clay"
+                          : "text-agri-ink"
+                      }`}
+                    >
                       {liveProbeState.coreTemp.toFixed(1)}
                     </span>
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="font-mono text-sm font-semibold text-agri-muted">
                       °C
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-600">
+                  <p
+                    className={`mt-3 text-xs leading-5 ${
+                      liveProbeState.highTempWarning
+                        ? "font-semibold text-agri-clay"
+                        : "text-agri-muted"
+                    }`}
+                  >
                     {liveProbeState.highTempWarning
-                      ? "PERINGATAN: Suhu >= 60°C! Buzzer alarm aktif."
-                      : "Pengukuran suhu internal tumpukan glagah (1-Wire)"}
+                      ? "Peringatan: suhu ≥ 60°C — alarm buzzer aktif."
+                      : "Pengukuran suhu internal tumpukan glagah via 1-Wire."}
                   </p>
                 </div>
 
-                {/* 2. Suhu Udara Kepala Alat (DHT22) */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="flex items-center justify-between text-slate-500 text-xs">
-                    <span className="font-medium">
-                      Suhu Udara Lingkungan (DHT22 • GPIO 15)
-                    </span>
-                    <Thermometer className="w-4 h-4 text-rose-500" />
+                {/* 2. Ambient Temp */}
+                <div className="border-b border-agri-primary/15 p-5">
+                  <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-agri-muted">
+                    <span>Suhu udara sekitar</span>
+                    <span>DHT22 · GPIO 15</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-extrabold text-agri-dark">
+                  <div className="mt-3 flex items-baseline gap-1.5 tabular-nums">
+                    <span className="display-serif text-5xl leading-none text-agri-ink">
                       {liveProbeState.ambientTemp.toFixed(1)}
                     </span>
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="font-mono text-sm font-semibold text-agri-muted">
                       °C
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    Referensi suhu udara ambient di kepala probe
+                  <p className="mt-3 text-xs leading-5 text-agri-muted">
+                    Referensi suhu lingkungan di kepala probe sebagai pembanding
+                    ΔT.
                   </p>
                 </div>
 
-                {/* 3. Kelembapan Relatif Udara (DHT22) */}
-                <div className="p-4 rounded-xl bg-sky-50/70 border border-sky-200/70 space-y-2">
-                  <div className="flex items-center justify-between text-sky-700 text-xs">
-                    <span className="font-medium">
-                      Kelembapan Relatif Udara (DHT22)
-                    </span>
-                    <Droplets className="w-4 h-4 text-sky-600" />
+                {/* 3. Ambient Humidity */}
+                <div className="border-b border-agri-primary/15 p-5 sm:border-b-0 sm:border-r">
+                  <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-agri-muted">
+                    <span>Kelembapan udara</span>
+                    <span>DHT22 · % RH</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-extrabold text-sky-950">
+                  <div className="mt-3 flex items-baseline gap-1.5 tabular-nums">
+                    <span className="display-serif text-5xl leading-none text-agri-ink">
                       {liveProbeState.ambientHum.toFixed(1)}
                     </span>
-                    <span className="text-sm font-semibold text-sky-700">
+                    <span className="font-mono text-sm font-semibold text-agri-muted">
                       % RH
                     </span>
                   </div>
-                  <p className="text-[11px] text-sky-700">
-                    Ambang tinggi &ge;80% RH | Ambang kering &le;55% RH
+                  <p className="mt-3 text-xs leading-5 text-agri-muted">
+                    Ambang kering &le;55% RH · ambang lembap &ge;80% RH.
                   </p>
                 </div>
 
-                {/* 4. Delta Suhu & Keputusan Edge Lokal */}
-                <div
-                  className={`p-4 rounded-xl border space-y-2 ${
-                    liveProbeState.hardwareClass === "CENDERUNG KERING"
-                      ? "bg-emerald-50/80 border-emerald-200"
-                      : liveProbeState.hardwareClass === "AKTIF/LEMBAP"
-                      ? "bg-rose-50/80 border-rose-200"
-                      : "bg-amber-50/80 border-amber-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs font-medium text-slate-700">
-                    <span>Selisih &Delta;T &amp; Status LED Edge</span>
-                    <Gauge className="w-4 h-4 text-agri-primary" />
+                {/* 4. Delta T & Edge Class */}
+                <div className="p-5">
+                  <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-agri-muted">
+                    <span>Selisih ΔT &amp; skor</span>
+                    <span>SKOR {liveProbeState.score}/3</span>
                   </div>
-                  <div className="flex items-baseline justify-between gap-2">
+                  <div className="mt-3 flex items-baseline justify-between gap-2 tabular-nums">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-extrabold text-agri-dark">
+                      <span className="display-serif text-5xl leading-none text-agri-ink">
                         {liveProbeState.delta >= 0 ? "+" : ""}
                         {liveProbeState.delta.toFixed(1)}
                       </span>
-                      <span className="text-sm font-semibold text-slate-500">
+                      <span className="font-mono text-sm font-semibold text-agri-muted">
                         °C
                       </span>
                     </div>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-white/80 border border-slate-200 text-slate-800">
-                      Skor {liveProbeState.score}/3
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span
+                      className={`border px-2 py-0.5 font-mono text-[11px] font-bold ${classAccent}`}
+                    >
+                      {liveProbeState.hardwareClass}
+                    </span>
+                    <span className="text-xs font-semibold text-agri-ink">
+                      → {liveProbeState.recommendation}
                     </span>
                   </div>
-                  <p className="text-[11px] font-bold text-slate-800">
-                    {liveProbeState.hardwareClass} &rarr;{" "}
-                    {liveProbeState.recommendation}
-                  </p>
                 </div>
               </div>
 
-              {/* Meta Info & Lokasi */}
-              <div className="pt-2 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
-                <div>
-                  Lokasi Unit:{" "}
-                  <strong className="text-slate-700">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-agri-primary/15 pb-4 text-xs text-agri-muted">
+                <span>
+                  Lokasi:{" "}
+                  <strong className="text-agri-ink">
                     {telemetry?.location || "Pemalang / Purbalingga"}
                   </strong>
-                </div>
-                <div>
-                  Pembaruan Terakhir:{" "}
-                  <strong className="text-slate-700">
-                    {telemetry?.received_at || "Real-time"}
-                  </strong>
-                </div>
-              </div>
-
-              {/* Action Button: Teruskan ke Klasifikasi ML */}
-              <div className="pt-2">
+                </span>
                 <button
                   type="button"
                   onClick={handleForwardToClassification}
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-agri-primary text-white font-bold text-base hover:bg-agri-primaryLight transition-all shadow-md shadow-agri-primary/25 hover:shadow-lg group"
+                  className="inline-flex min-h-11 items-center gap-2 bg-agri-primary px-5 text-xs font-bold text-white transition-colors hover:bg-agri-primaryLight sm:text-sm"
                 >
-                  <span>
-                    Teruskan Data Sensor Ini ke Klasifikasi Machine Learning
-                  </span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform text-agri-emeraldLight" />
+                  <span>Teruskan ke klasifikasi Machine Learning</span>
+                  <ArrowRight className="h-4 w-4 text-agri-emeraldLight" />
                 </button>
+              </div>
+            </div>
+
+            {/* Field Sample Presets as Numbered Field Index */}
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+                    Profil sampel lapangan
+                  </p>
+                  <h3 className="display-serif mt-1 text-2xl text-agri-ink">
+                    Skenario uji cepat Pemalang &amp; Purbalingga
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleTriggerHighTempTest}
+                  className={`inline-flex min-h-9 items-center gap-1.5 border px-3 text-xs font-semibold transition-colors ${
+                    activePresetId === "overheat-test"
+                      ? "border-agri-clay bg-agri-clay text-white"
+                      : "border-agri-clay/50 bg-transparent text-agri-clay hover:bg-[#F5E6DC]"
+                  }`}
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  <span>Uji alarm &ge;60°C</span>
+                </button>
+              </div>
+
+              <div className="divide-y divide-agri-primary/15 border-y border-agri-primary/20">
+                {presets.map((preset, idx) => {
+                  const isActive = activePresetId === preset.id;
+                  const coreT =
+                    preset.core_temperature_c ??
+                    preset.ambient_temperature_c + 2;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handleSelectPreset(preset)}
+                      className={`grid w-full gap-3 px-3 py-4 text-left transition-colors sm:grid-cols-[2.5rem_1fr_auto] sm:items-start ${
+                        isActive
+                          ? "border-l-2 border-agri-primary bg-white/90"
+                          : "hover:bg-white/60"
+                      }`}
+                    >
+                      <span className="display-serif text-2xl leading-none text-agri-clay">
+                        0{idx + 1}
+                      </span>
+                      <div className="space-y-1">
+                        <div className="text-sm font-bold text-agri-ink">
+                          {preset.title}
+                        </div>
+                        <div className="text-xs font-semibold text-agri-primary">
+                          {preset.target_hypothesis}
+                        </div>
+                        <p className="text-xs leading-5 text-agri-muted">
+                          {preset.description}
+                        </p>
+                      </div>
+                      <div className="space-y-0.5 font-mono text-[11px] text-agri-muted tabular-nums sm:text-right">
+                        <div>
+                          T_inti{" "}
+                          <strong className="text-agri-ink">{coreT}°C</strong>
+                        </div>
+                        <div>
+                          Udara{" "}
+                          <strong className="text-agri-ink">
+                            {preset.ambient_temperature_c}°C
+                          </strong>
+                        </div>
+                        <div>
+                          RH{" "}
+                          <strong className="text-agri-ink">
+                            {preset.ambient_humidity_rh}%
+                          </strong>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Kolom Kanan: Preset Sampel Riset & Pengontrol Simulasi */}
-          <div className="space-y-6">
-            {/* Kartu 1: Preset Sampel Lapangan Pemalang & Purbalingga */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-base text-agri-dark">
-                  Preset Sampel Lapangan
-                </h3>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  Demo Juri
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Klik profil sampel di bawah untuk langsung melihat perubahan nyala LED pada rangkaian Wokwi:
+          {/* Right: Interactive Sensor Bench Controls */}
+          <aside className="paper-panel p-5 sm:p-6">
+            <div className="border-b border-agri-primary/15 pb-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-agri-clay">
+                Kendali simulasi
               </p>
-
-              <div className="space-y-3">
-                {presets.map((preset) => (
-                  <div
-                    key={preset.id}
-                    onClick={() => handleSelectPreset(preset)}
-                    className="p-3.5 rounded-xl border border-slate-200 hover:border-agri-emerald/70 hover:bg-agri-surface/50 cursor-pointer transition-all group"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-xs text-agri-dark group-hover:text-agri-primary">
-                        {preset.title}
-                      </h4>
-                      <CheckCircle2 className="w-4 h-4 text-slate-300 group-hover:text-agri-emerald shrink-0" />
-                    </div>
-                    <div className="text-[11px] text-agri-primary font-semibold mt-1">
-                      {preset.target_hypothesis}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                      <span>
-                        Tumpuk:{" "}
-                        <strong>
-                          {preset.core_temperature_c ??
-                            preset.ambient_temperature_c + 2}
-                          °C
-                        </strong>
-                      </span>
-                      <span>
-                        Udara: <strong>{preset.ambient_temperature_c}°C</strong>{" "}
-                        ({preset.ambient_humidity_rh}%)
-                      </span>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Tombol Uji Alarm Buzzer >= 60°C */}
-                <button
-                  type="button"
-                  onClick={handleTriggerHighTempTest}
-                  className="w-full p-2.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50/70 hover:bg-fuchsia-100/80 text-fuchsia-900 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
-                >
-                  <Volume2 className="w-4 h-4 text-fuchsia-600" />
-                  <span>Uji Alarm Overheat Tumpukan (&ge;60°C + Buzzer)</span>
-                </button>
-              </div>
+              <h3 className="display-serif mt-1 text-2xl text-agri-ink">
+                Ubah masukan sensor
+              </h3>
+              <p className="mt-1.5 text-xs leading-5 text-agri-muted">
+                Geser parameter untuk melihat respon langsung pada DS18B20,
+                DHT22, 3x LED, dan buzzer di skematik atas.
+              </p>
             </div>
 
-            {/* Kartu 2: Kontrol Sensor Real-Time pada Rangkaian Wokwi */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-4">
-              <h3 className="font-bold text-base text-agri-dark">
-                Kontrol Sensor Interaktif
-              </h3>
-              <p className="text-xs text-slate-500">
-                Geser slider untuk mengamati respon <strong>DS18B20</strong>,{" "}
-                <strong>DHT22</strong>, <strong>3x LED</strong>, dan{" "}
-                <strong>Buzzer</strong> secara langsung pada desain rangkaian:
-              </p>
-
-              <form onSubmit={handleSimulatePost} className="space-y-3">
+            <form onSubmit={handleSimulatePost} className="mt-5 space-y-5">
+              <div className="space-y-4">
                 <div>
-                  <label className="flex justify-between text-xs font-medium text-slate-700 mb-1">
-                    <span>Suhu Tumpukan DS18B20 (°C)</span>
-                    <strong className="text-orange-600">
+                  <label
+                    htmlFor="sim-core-temp"
+                    className="mb-2 flex items-baseline justify-between text-xs"
+                  >
+                    <span className="font-semibold text-agri-ink">
+                      Suhu tumpukan (DS18B20)
+                    </span>
+                    <span className="font-mono font-bold text-agri-clay tabular-nums">
                       {customCoreTemp}°C
-                    </strong>
+                    </span>
                   </label>
                   <input
+                    id="sim-core-temp"
                     type="range"
                     min="20"
                     max="70"
                     step="0.5"
                     value={customCoreTemp}
-                    onChange={(e) => setCustomCoreTemp(e.target.value)}
-                    className="w-full accent-orange-500 cursor-pointer"
+                    onChange={(e) => {
+                      setActivePresetId(null);
+                      setCustomCoreTemp(e.target.value);
+                    }}
+                    className="field-range field-range-clay"
                   />
+                  <div className="mt-1 flex justify-between font-mono text-[10px] text-agri-muted">
+                    <span>20°C</span>
+                    <span>60°C alarm</span>
+                    <span>70°C</span>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="flex justify-between text-xs font-medium text-slate-700 mb-1">
-                    <span>Suhu Udara DHT22 (°C)</span>
-                    <strong className="text-agri-primary">{customTemp}°C</strong>
+                  <label
+                    htmlFor="sim-amb-temp"
+                    className="mb-2 flex items-baseline justify-between text-xs"
+                  >
+                    <span className="font-semibold text-agri-ink">
+                      Suhu udara (DHT22)
+                    </span>
+                    <span className="font-mono font-bold text-agri-primary tabular-nums">
+                      {customTemp}°C
+                    </span>
                   </label>
                   <input
+                    id="sim-amb-temp"
                     type="range"
                     min="18"
                     max="45"
                     step="0.5"
                     value={customTemp}
-                    onChange={(e) => setCustomTemp(e.target.value)}
-                    className="w-full accent-agri-primary cursor-pointer"
+                    onChange={(e) => {
+                      setActivePresetId(null);
+                      setCustomTemp(e.target.value);
+                    }}
+                    className="field-range"
                   />
                 </div>
 
                 <div>
-                  <label className="flex justify-between text-xs font-medium text-slate-700 mb-1">
-                    <span>Kelembapan Udara DHT22 (% RH)</span>
-                    <strong className="text-sky-600">{customHumidity}%</strong>
+                  <label
+                    htmlFor="sim-hum"
+                    className="mb-2 flex items-baseline justify-between text-xs"
+                  >
+                    <span className="font-semibold text-agri-ink">
+                      Kelembapan udara (DHT22)
+                    </span>
+                    <span className="font-mono font-bold text-agri-primary tabular-nums">
+                      {customHumidity}% RH
+                    </span>
                   </label>
                   <input
+                    id="sim-hum"
                     type="range"
                     min="30"
                     max="95"
                     step="0.5"
                     value={customHumidity}
-                    onChange={(e) => setCustomHumidity(e.target.value)}
-                    className="w-full accent-sky-600 cursor-pointer"
+                    onChange={(e) => {
+                      setActivePresetId(null);
+                      setCustomHumidity(e.target.value);
+                    }}
+                    className="field-range"
                   />
                 </div>
 
                 <div>
-                  <label className="flex justify-between text-xs font-medium text-slate-700 mb-1">
-                    <span>Tren Kenaikan &Delta;T (°C/siklus)</span>
-                    <strong className="text-slate-700">
+                  <label
+                    htmlFor="sim-trend"
+                    className="mb-2 flex items-baseline justify-between text-xs"
+                  >
+                    <span className="font-semibold text-agri-ink">
+                      Tren kenaikan ΔT / siklus
+                    </span>
+                    <span className="font-mono font-bold text-agri-ink tabular-nums">
                       {parseFloat(customTrend) >= 0 ? "+" : ""}
                       {customTrend}°C
-                    </strong>
+                    </span>
                   </label>
                   <input
+                    id="sim-trend"
                     type="range"
                     min="-1"
                     max="3"
                     step="0.2"
                     value={customTrend}
-                    onChange={(e) => setCustomTrend(e.target.value)}
-                    className="w-full accent-slate-600 cursor-pointer"
+                    onChange={(e) => {
+                      setActivePresetId(null);
+                      setCustomTrend(e.target.value);
+                    }}
+                    className="field-range"
                   />
                 </div>
+              </div>
 
-                <div className="pt-2 border-t border-slate-100 space-y-2.5">
-                  <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                    Estimasi Pendukung untuk ML Tabular
+              <div className="space-y-4 border-t border-agri-primary/15 pt-4">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-agri-muted">
+                  Parameter pendukung ML tabular
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="sim-mass"
+                      className="mb-2 flex items-baseline justify-between text-[11px]"
+                    >
+                      <span className="text-agri-muted">Massa</span>
+                      <strong className="font-mono text-agri-ink tabular-nums">
+                        {customMass} g
+                      </strong>
+                    </label>
+                    <input
+                      id="sim-mass"
+                      type="range"
+                      min="20"
+                      max="350"
+                      step="5"
+                      value={customMass}
+                      onChange={(e) => setCustomMass(e.target.value)}
+                      className="field-range"
+                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[11px] text-slate-600 mb-1">
-                        Massa (g): <strong>{customMass}</strong>
-                      </label>
-                      <input
-                        type="range"
-                        min="20"
-                        max="350"
-                        step="5"
-                        value={customMass}
-                        onChange={(e) => setCustomMass(e.target.value)}
-                        className="w-full accent-agri-emerald cursor-pointer"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] text-slate-600 mb-1">
-                        Kadar Air (% MC): <strong>{customMoisture}</strong>
-                      </label>
-                      <input
-                        type="range"
-                        min="6"
-                        max="60"
-                        step="0.5"
-                        value={customMoisture}
-                        onChange={(e) => setCustomMoisture(e.target.value)}
-                        className="w-full accent-emerald-600 cursor-pointer"
-                      />
-                    </div>
+
+                  <div>
+                    <label
+                      htmlFor="sim-moisture"
+                      className="mb-2 flex items-baseline justify-between text-[11px]"
+                    >
+                      <span className="text-agri-muted">Kadar air</span>
+                      <strong className="font-mono text-agri-ink tabular-nums">
+                        {customMoisture}%
+                      </strong>
+                    </label>
+                    <input
+                      id="sim-moisture"
+                      type="range"
+                      min="6"
+                      max="60"
+                      step="0.5"
+                      value={customMoisture}
+                      onChange={(e) => setCustomMoisture(e.target.value)}
+                      className="field-range"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {sendSuccessMessage && (
-                  <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-200 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{sendSuccessMessage}</span>
-                  </div>
-                )}
+              {sendSuccessMessage && (
+                <div className="flex items-start gap-2 border-l-2 border-agri-primary bg-agri-surface/70 px-3 py-2.5 text-xs text-agri-primary">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{sendSuccessMessage}</span>
+                </div>
+              )}
 
-                <button
-                  type="submit"
-                  disabled={isSimulatingSending}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition-colors"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>
-                    {isSimulatingSending
-                      ? "Mengirim..."
-                      : "Sinkronkan Telemetri Probe ke Backend"}
-                  </span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+              <button
+                type="submit"
+                disabled={isSimulatingSending}
+                className="flex min-h-11 w-full items-center justify-center gap-2 bg-agri-dark px-4 text-xs font-bold text-agri-bg transition-colors hover:bg-agri-primary disabled:opacity-60"
+              >
+                <Send className="h-3.5 w-3.5" />
+                <span>
+                  {isSimulatingSending
+                    ? "Mengirim telemetri..."
+                    : "Sinkronkan telemetri ke backend"}
+                </span>
+              </button>
+            </form>
+          </aside>
+        </section>
       </div>
     </div>
   );

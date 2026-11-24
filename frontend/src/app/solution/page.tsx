@@ -1,229 +1,208 @@
 import React from "react";
 import Link from "next/link";
-import { 
-  Sprout, 
-  Flame, 
-  Recycle, 
-  ArrowRight, 
-  CheckCircle2, 
-  FileCheck, 
-  Cpu, 
-  FlaskConical, 
-  AlertCircle 
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import DossierHeader from "@/components/layout/DossierHeader";
+
+const pathways = [
+  {
+    num: "01",
+    tag: "Perbanyakan budidaya terencana",
+    title: "Benih Tanaman",
+    subtitle: "Seed propagation",
+    description:
+      "Bahan bunga yang mengandung calon biji utuh yang dipanen saat kematangan fisiologis prima. Memungkinkan petani melakukan budidaya glagah secara terencana di lahan marjinal tanpa terus bergantung pada pencarian glagah liar di tebing terjal.",
+    parameters: [
+      ["Umur pascapanen", "1 – 7 hari"],
+      ["Skor kondisi biji", "3 (Utuh / segar)"],
+      ["Kadar air biomassa", "10% – 18% MC"],
+    ],
+    validations: [
+      {
+        name: "Uji Daya Berkecambah (Germination Test)",
+        detail:
+          "Mengikuti kaidah International Seed Testing Association (ISTA).",
+      },
+      {
+        name: "Uji Tetrazolium",
+        detail: "Pengujian biokimia viabilitas embrio biji secara cepat.",
+      },
+    ],
+  },
+  {
+    num: "02",
+    tag: "Energi terbarukan pengganti kayu / fosil",
+    title: "Briket Biomassa",
+    subtitle: "Bio-energy pellets",
+    description:
+      "Serbuk rontokan bunga dan spikelet kering hasil pemukulan sapu memiliki kandungan selulosa dan lignin tinggi. Bahan ini sesuai untuk dipadatkan menjadi briket bahan bakar bagi pengeringan tembakau, pembakaran genteng, atau tungku UMKM.",
+    parameters: [
+      ["Kadar air biomassa", "≤ 12% MC (kering optimal)"],
+      ["Struktur fisik", "Serbuk rontokan / serabut halus"],
+      ["Standar acuan", "SNI 01-6235-2000"],
+    ],
+    validations: [
+      {
+        name: "Uji Bomb Kalorimeter",
+        detail:
+          "Memastikan nilai kalor di atas 4.000 kal/g sesuai standar briket biomassa.",
+      },
+      {
+        name: "Uji Kadar Air & Kadar Abu SNI",
+        detail:
+          "Memastikan pembakaran lebih bersih dengan residu abu minimal.",
+      },
+    ],
+  },
+  {
+    num: "03",
+    tag: "Restorasi kesuburan tanah pertanian",
+    title: "Pupuk Kompos Organik",
+    subtitle: "Organic soil amendment",
+    description:
+      "Residu organik yang telah disimpan lama, basah, atau mulai berjamur tidak efisien untuk dibakar, tetapi kaya karbon organik. Bahan ini diarahkan ke komposting aerobik bersama kotoran ternak sapi atau kambing.",
+    parameters: [
+      ["Kadar air biomassa", "25% – 60% MC (lembap)"],
+      ["Umur pascapanen", "> 15 hari (terdegradasi)"],
+      ["Standar acuan", "SNI 19-7030-2004"],
+    ],
+    validations: [
+      {
+        name: "Uji Rasio C/N",
+        detail:
+          "Memastikan keseimbangan karbon dan nitrogen berkisar 10 – 20:1 pada kompos matang.",
+      },
+      {
+        name: "Uji Fitotoksisitas",
+        detail:
+          "Memastikan kompos tidak menghambat perkecambahan benih tanaman uji.",
+      },
+    ],
+  },
+];
 
 export default function SolutionPage() {
   return (
-    <div className="py-12 bg-agri-bg min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Header */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agri-surface border border-agri-emerald/30 text-agri-primary text-xs font-semibold">
-            <Sprout className="w-4 h-4 text-agri-emerald" />
-            <span>Konsep Utama Teknologi</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-agri-dark tracking-tight">
-            Solusi Inovasi GlagahSmart: Tiga Jalur Hilirisasi
-          </h1>
-          <p className="text-slate-600 text-base leading-relaxed">
-            Menganalisis parameter numerik fisik-kimia sampel bunga glagah untuk memperkirakan potensi pemanfaatannya menjadi <strong>Benih</strong>, <strong>Briket Biomassa</strong>, atau <strong>Pupuk Kompos</strong>.
-          </p>
-        </div>
+    <div className="pb-20">
+      <DossierHeader
+        eyebrow="Konsep teknologi · Solusi"
+        title={
+          <>
+            Tiga jalur hilirisasi{" "}
+            <span className="text-agri-primary">yang bisa diuji.</span>
+          </>
+        }
+        summary={
+          <>
+            GlagahSmart membaca parameter fisik-kimia numerik residu bunga
+            glagah untuk mengarahkan keputusan awal antara{" "}
+            <strong>Benih</strong>, <strong>Briket Biomassa</strong>, atau{" "}
+            <strong>Pupuk Kompos</strong> — lengkap dengan syarat verifikasi
+            laboratorium masing-masing.
+          </>
+        }
+        maxWidthClass="max-w-6xl"
+      />
 
-        {/* 3 Detail Produk Solusi */}
-        <div className="space-y-8">
-          
-          {/* 1. Benih */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-soft space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-                  <Sprout className="w-7 h-7" />
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                    Jalur Alternatif 1
-                  </span>
-                  <h2 className="text-2xl font-extrabold text-agri-dark">
-                    Benih Tanaman (Seed Propagation)
-                  </h2>
-                </div>
-              </div>
-              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-                Tujuan: Perbanyakan Budidaya Terencana
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Deskripsi & Potensi:</h4>
-                <p className="leading-relaxed">
-                  Bahan bunga yang mengandung calon biji utuh yang dipanen saat kematangan fisiologis prima. Memungkinkan petani melakukan budidaya glagah secara intensif di lahan-lahan marjinal tanpa harus bergantung pada pencarian glagah liar di tebing terjal.
-                </p>
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <div className="font-bold text-slate-800">Parameter Kunci Model:</div>
-                  <div>• Umur pascapanen: <strong>1 – 7 hari</strong></div>
-                  <div>• Skor kondisi biji: <strong>3 (Utuh/Segar)</strong></div>
-                  <div>• Kadar air biomassa: <strong>10% – 18% MC</strong></div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Syarat Uji Validasi Ilmiah:</h4>
-                <p className="leading-relaxed">
-                  Kelayakan sebenarnya memerlukan verifikasi laboratorium benih untuk memastikan daya kecambah aktif:
-                </p>
-                <div className="space-y-2">
-                  <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Uji Daya Berkecambah (Germination Test):</strong> Berdasarkan kaidah ISTA (International Seed Testing Association).</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Uji Tetrazolium:</strong> Pengujian biokimia viabilitas embrio biji secara cepat.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Briket Biomassa */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-soft space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
-                  <Flame className="w-7 h-7" />
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
-                    Jalur Alternatif 2
-                  </span>
-                  <h2 className="text-2xl font-extrabold text-agri-dark">
-                    Briket Biomassa (Bio-Energy Pellets)
-                  </h2>
-                </div>
-              </div>
-              <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">
-                Tujuan: Energi Terbarukan Pengganti Fosil
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Deskripsi & Potensi:</h4>
-                <p className="leading-relaxed">
-                  Sisa serbuk rontokan bunga dan spikelet kering hasil proses pemukulan sapu memiliki kandungan selulosa dan lignin tinggi. Bahan ini sangat cocok dipadatkan (densifikasi) menjadi briket bahan bakar untuk pengeringan tembakau, pembakaran genteng, atau tungku UMKM.
-                </p>
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <div className="font-bold text-slate-800">Parameter Kunci Model:</div>
-                  <div>• Kadar air biomassa: <strong>&le; 12% MC</strong> (Kering optimal)</div>
-                  <div>• Struktur fisik: <strong>Serbuk rontokan / serabut halus</strong></div>
-                  <div>• Standar acuan: <strong>SNI 01-6235-2000</strong></div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Syarat Uji Validasi Ilmiah:</h4>
-                <p className="leading-relaxed">
-                  Kelayakan komersial memerlukan uji proksimat dan nilai kalor bahan bakar padat:
-                </p>
-                <div className="space-y-2">
-                  <div className="p-2.5 rounded-lg bg-amber-50 text-amber-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Uji Bomb Kalorimeter:</strong> Memastikan nilai kalor di atas 4.000 kal/g sesuai standar briket biomassa.</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-amber-50 text-amber-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Uji Kadar Air & Kadar Abu SNI:</strong> Memastikan pembakaran bersih dengan residu abu minimal.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. Pupuk Kompos */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-soft space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center text-green-700">
-                  <Recycle className="w-7 h-7" />
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-green-800 uppercase tracking-wider">
-                    Jalur Alternatif 3
-                  </span>
-                  <h2 className="text-2xl font-extrabold text-agri-dark">
-                    Pupuk Kompos Organik (Organic Soil Amendment)
-                  </h2>
-                </div>
-              </div>
-              <span className="px-3 py-1 rounded-full bg-green-100 text-green-900 text-xs font-bold">
-                Tujuan: Restorasi Kesuburan Tanah Pertanian
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Deskripsi & Potensi:</h4>
-                <p className="leading-relaxed">
-                  Residu organik yang telah mengalami penyimpanan lama, basah, atau berjamur tidak efisien untuk dibakar, namun memiliki nilai karbon organik melimpah. Sangat baik diolah melalui komposting aerobik bersama kotoran ternak sapi/kambing.
-                </p>
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <div className="font-bold text-slate-800">Parameter Kunci Model:</div>
-                  <div>• Kadar air biomassa: <strong>&ge; 25% – 60% MC</strong> (Lembap)</div>
-                  <div>• Umur pascapanen: <strong>&gt; 15 hari</strong> (Terdegradasi)</div>
-                  <div>• Standar acuan: <strong>SNI 19-7030-2004</strong></div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-slate-800">Syarat Uji Validasi Ilmiah:</h4>
-                <p className="leading-relaxed">
-                  Kematangan kompos harus dinilai berdasarkan parameter biokimia fermentasi:
-                </p>
-                <div className="space-y-2">
-                  <div className="p-2.5 rounded-lg bg-green-50 text-green-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
-                    <span><strong>Uji Rasio C/N:</strong> Memastikan keseimbangan karbon dan nitrogen berkisar 10 – 20:1 pada kompos matang.</span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-green-50 text-green-950 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
-                    <span><strong>Uji Fitotoksisitas:</strong> Memastikan kompos tidak menghambat perkecambahan benih tanaman uji.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* CTA Demonstrasi */}
-        <div className="p-8 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-white">
-              Coba Klasifikasikan Sampel Nyata
-            </h3>
-            <p className="text-xs text-slate-400">
-              Gunakan simulasi Wokwi untuk membaca sensor atau masukkan parameter secara manual pada demonstrasi Machine Learning.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Link
-              href="/simulation"
-              className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white hover:bg-slate-700 transition-colors"
+      <div className="mx-auto max-w-6xl px-4 pt-12 sm:px-6 lg:px-8">
+        <div className="divide-y divide-agri-primary/20 border-b border-agri-primary/20">
+          {pathways.map((p) => (
+            <section
+              key={p.num}
+              className="grid gap-8 py-12 first:pt-2 lg:grid-cols-[0.72fr_1.28fr]"
             >
-              Simulasi Wokwi
-            </Link>
-            <Link
-              href="/classification"
-              className="px-5 py-2.5 rounded-xl bg-agri-emerald text-slate-950 text-xs font-bold hover:bg-agri-emeraldLight transition-colors"
-            >
-              Uji Klasifikasi ML →
-            </Link>
-          </div>
+              <div className="space-y-3">
+                <div className="flex items-baseline gap-3">
+                  <span className="display-serif text-4xl leading-none text-agri-clay">
+                    {p.num}
+                  </span>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-agri-muted">
+                    {p.subtitle}
+                  </span>
+                </div>
+                <h2 className="display-serif text-4xl leading-tight text-agri-ink">
+                  {p.title}
+                </h2>
+                <p className="border-l-2 border-agri-primary/40 pl-3 text-xs font-semibold text-agri-primary">
+                  {p.tag}
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <p className="text-sm leading-7 text-agri-muted">
+                  {p.description}
+                </p>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="paper-panel p-5">
+                    <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-ink">
+                      Parameter kunci model
+                    </h3>
+                    <dl className="mt-3 divide-y divide-agri-primary/15 text-xs">
+                      {p.parameters.map(([label, value]) => (
+                        <div
+                          key={label}
+                          className="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                        >
+                          <dt className="text-agri-muted">{label}</dt>
+                          <dd className="text-right font-semibold text-agri-ink">
+                            {value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+
+                  <div className="border border-agri-primary/20 bg-white/60 p-5">
+                    <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-primary">
+                      Syarat validasi laboratorium
+                    </h3>
+                    <ul className="mt-3 space-y-3 text-xs leading-6 text-agri-muted">
+                      {p.validations.map((v) => (
+                        <li key={v.name} className="flex items-start gap-2">
+                          <Check className="mt-1 h-3.5 w-3.5 shrink-0 text-agri-primary" />
+                          <span>
+                            <strong className="text-agri-ink">{v.name}:</strong>{" "}
+                            {v.detail}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+          ))}
         </div>
 
+        {/* Closing Band */}
+        <section className="mt-14 bg-agri-primary px-6 py-9 text-white sm:px-9">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-emeraldLight">
+                Uji langsung
+              </p>
+              <h2 className="display-serif mt-1 text-3xl sm:text-4xl">
+                Coba lihat alur sensor hingga rekomendasi kelas.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/simulation"
+                className="inline-flex min-h-11 items-center gap-2 bg-white px-5 text-xs font-bold text-agri-primary hover:bg-agri-bg sm:text-sm"
+              >
+                <span>Simulasi Wokwi</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/classification"
+                className="inline-flex min-h-11 items-center gap-2 border border-white/40 px-5 text-xs font-bold text-white hover:bg-white/10 sm:text-sm"
+              >
+                <span>Uji klasifikasi ML</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

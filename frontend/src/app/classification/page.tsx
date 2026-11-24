@@ -2,26 +2,26 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { 
-  FlaskConical, 
-  Sparkles, 
-  CheckCircle2, 
-  AlertCircle, 
-  Flame, 
-  Sprout, 
-  Recycle, 
-  BarChart3, 
-  ShieldCheck, 
+import {
+  ArrowRight,
+  Check,
   GitCompare,
-  FileCheck2
+  FlaskConical,
+  Flame,
+  Recycle,
+  Sprout,
 } from "lucide-react";
-import { ClassificationInput, PredictionResult, ModelInfo } from "@/lib/types";
+import {
+  ClassificationInput,
+  PredictionResult,
+  ModelInfo,
+} from "@/lib/types";
 import { BACKEND_URL } from "@/lib/utils";
+import DossierHeader from "@/components/layout/DossierHeader";
 
 function ClassificationContent() {
   const searchParams = useSearchParams();
 
-  // Initial state from query params (forwarded from Wokwi simulation)
   const initialTemp = searchParams.get("temp") || "28.5";
   const initialRH = searchParams.get("rh") || "68.0";
   const initialMass = searchParams.get("mass") || "95.0";
@@ -34,13 +34,14 @@ function ClassificationContent() {
   const [moisture, setMoisture] = useState(initialMoisture);
   const [age, setAge] = useState("7");
   const [seedCondition, setSeedCondition] = useState("2");
-  const [sampleLabel, setSampleLabel] = useState("Sampel Residu Glagah Pemalang-Purbalingga");
+  const [sampleLabel, setSampleLabel] = useState(
+    "Sampel Residu Glagah Pemalang-Purbalingga"
+  );
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null);
 
-  // Fetch model metadata
   useEffect(() => {
     const fetchInfo = async () => {
       try {
@@ -56,7 +57,6 @@ function ClassificationContent() {
     fetchInfo();
   }, []);
 
-  // Run classification on load if query params were provided
   useEffect(() => {
     if (searchParams.get("temp")) {
       handleRunClassification();
@@ -86,26 +86,31 @@ function ClassificationContent() {
 
       if (!res.ok) {
         const errJson = await res.json();
-        throw new Error(errJson.detail || "Gagal melakukan inferensi Machine Learning");
+        throw new Error(
+          errJson.detail || "Gagal melakukan inferensi Machine Learning"
+        );
       }
 
       const data: PredictionResult = await res.json();
       setResult(data);
-    } catch (err: any) {
-      console.warn("Prediction API failed, using scientific fallback prediction", err);
+    } catch (err: unknown) {
+      console.warn(
+        "Prediction API failed, using scientific fallback prediction",
+        err
+      );
       const m = parseFloat(moisture);
       const a = parseInt(age, 10);
       const s = parseInt(seedCondition, 10);
-      
+
       let predictedClass = "Briket Biomassa";
-      let probs = { "Benih": 12.0, "Briket Biomassa": 82.5, "Pupuk Kompos": 5.5 };
+      let probs = { Benih: 12.0, "Briket Biomassa": 82.5, "Pupuk Kompos": 5.5 };
 
       if (m > 24.0 || a > 20) {
         predictedClass = "Pupuk Kompos";
-        probs = { "Benih": 4.0, "Briket Biomassa": 8.0, "Pupuk Kompos": 88.0 };
+        probs = { Benih: 4.0, "Briket Biomassa": 8.0, "Pupuk Kompos": 88.0 };
       } else if (s === 3 && a <= 7 && m >= 9.0 && m <= 19.0) {
         predictedClass = "Benih";
-        probs = { "Benih": 89.5, "Briket Biomassa": 8.0, "Pupuk Kompos": 2.5 };
+        probs = { Benih: 89.5, "Briket Biomassa": 8.0, "Pupuk Kompos": 2.5 };
       }
 
       setResult({
@@ -122,8 +127,8 @@ function ClassificationContent() {
             result: {
               predicted_class: predictedClass,
               agreement_with_rf: true,
-              confidence: 96.0
-            }
+              confidence: 96.0,
+            },
           },
           scientific_explanation: {
             primary_factors: [
@@ -132,15 +137,15 @@ function ClassificationContent() {
             ],
             recommended_lab_tests: [
               "Uji kadar air oven & abu sesuai SNI 01-6235-2000 (Briket).",
-              "Uji perkecambahan ISTA (Benih) atau Rasio C/N (Kompos)."
+              "Uji perkecambahan ISTA (Benih) atau Rasio C/N (Kompos).",
             ],
             scientific_disclaimers: [
               "Model berbasis aturan ilmiah inferensi Random Forest scikit-learn.",
-              "Pengujian laboratorium fisik tetap dianjurkan sebelum komersialisasi masal."
-            ]
+              "Pengujian laboratorium fisik tetap dianjurkan sebelum komersialisasi masal.",
+            ],
           },
-          validated_against_sni: true
-        }
+          validated_against_sni: true,
+        },
       });
     } finally {
       setLoading(false);
@@ -150,429 +155,469 @@ function ClassificationContent() {
   const getClassIcon = (clsName: string) => {
     switch (clsName) {
       case "Benih":
-        return <Sprout className="w-6 h-6 text-emerald-600" />;
+        return <Sprout className="h-5 w-5 text-agri-primary" />;
       case "Briket Biomassa":
-        return <Flame className="w-6 h-6 text-amber-600" />;
+        return <Flame className="h-5 w-5 text-agri-clay" />;
       case "Pupuk Kompos":
-        return <Recycle className="w-6 h-6 text-green-700" />;
+        return <Recycle className="h-5 w-5 text-agri-emeraldDark" />;
       default:
-        return <FlaskConical className="w-6 h-6 text-agri-primary" />;
+        return <FlaskConical className="h-5 w-5 text-agri-primary" />;
     }
   };
 
-  const getClassTheme = (clsName: string) => {
-    switch (clsName) {
-      case "Benih":
-        return {
-          bg: "bg-emerald-50",
-          border: "border-emerald-200",
-          text: "text-emerald-950",
-          badgeBg: "bg-emerald-100 text-emerald-800",
-          barColor: "bg-emerald-500",
-        };
-      case "Briket Biomassa":
-        return {
-          bg: "bg-amber-50",
-          border: "border-amber-200",
-          text: "text-amber-950",
-          badgeBg: "bg-amber-100 text-amber-800",
-          barColor: "bg-amber-500",
-        };
-      case "Pupuk Kompos":
-        return {
-          bg: "bg-green-50",
-          border: "border-green-200",
-          text: "text-green-950",
-          badgeBg: "bg-green-100 text-green-800",
-          barColor: "bg-green-600",
-        };
-      default:
-        return {
-          bg: "bg-slate-50",
-          border: "border-slate-200",
-          text: "text-slate-900",
-          badgeBg: "bg-slate-100 text-slate-800",
-          barColor: "bg-agri-primary",
-        };
-    }
+  const getBarTone = (clsName: string) => {
+    if (clsName === "Briket Biomassa") return "bg-agri-clay";
+    if (clsName === "Pupuk Kompos") return "bg-agri-emeraldDark";
+    return "bg-agri-primary";
   };
 
   return (
-    <div className="py-12 bg-agri-bg min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        
-        {/* Header Section */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agri-surface border border-agri-emerald/30 text-agri-primary text-xs font-semibold">
-            <FlaskConical className="w-4 h-4 text-agri-emerald" />
-            <span>Fase 2: Inferensi Machine Learning Tabular Numerik</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-agri-dark tracking-tight">
-            Demonstrasi Klasifikasi Machine Learning
-          </h1>
-          <p className="text-slate-600 max-w-3xl text-base leading-relaxed">
-            Menganalisis parameter fisik-kimia sampel bunga dan serbuk glagah untuk merekomendasikan potensi hilirisasi optimal: <strong>Benih</strong>, <strong>Briket Biomassa</strong>, atau <strong>Pupuk Kompos</strong> menggunakan algoritma <strong>Random Forest</strong> dan <strong>Decision Tree</strong>.
-          </p>
-        </div>
-
-        {/* Sumber Data Banner */}
-        {searchParams.get("source") && (
-          <div className="p-3.5 rounded-xl bg-slate-900 text-white flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-agri-emeraldLight animate-ping"></span>
-              <span>Parameter terisi otomatis dari sumber: <strong>{sourceParam}</strong></span>
+    <div className="pb-20">
+      <DossierHeader
+        eyebrow="Inferensi tabular · Fase 02"
+        title={
+          <>
+            Uji klasifikasi{" "}
+            <span className="text-agri-primary">satu sampel.</span>
+          </>
+        }
+        summary={
+          <>
+            Evaluasi parameter fisik-kimia sampel bunga dan serbuk glagah untuk
+            membaca arah pemanfaatan antara <strong>Benih</strong>,{" "}
+            <strong>Briket Biomassa</strong>, atau <strong>Pupuk Kompos</strong>{" "}
+            menggunakan Random Forest dan pembanding Decision Tree.
+          </>
+        }
+        aside={
+          <div className="paper-panel p-4 text-xs">
+            <div className="flex items-center justify-between border-b border-agri-primary/15 pb-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-agri-muted">
+              <span>Spesifikasi model</span>
+              <span className="text-agri-primary">Tabular only</span>
             </div>
-            <span className="text-slate-400">Sinkronisasi Wokwi Aktif</span>
+            <dl className="mt-3 space-y-1.5">
+              <div className="flex justify-between gap-2">
+                <dt className="text-agri-muted">Utama</dt>
+                <dd className="font-semibold text-agri-ink">
+                  Random Forest (100 trees)
+                </dd>
+              </div>
+              <div className="flex justify-between gap-2">
+                <dt className="text-agri-muted">Pembanding</dt>
+                <dd className="font-semibold text-agri-ink">Decision Tree</dd>
+              </div>
+              <div className="flex justify-between gap-2">
+                <dt className="text-agri-muted">DL / Vision</dt>
+                <dd className="font-mono text-agri-muted">Tidak digunakan</dd>
+              </div>
+              <div className="border-t border-agri-primary/10 pt-2 text-[11px] text-agri-primary">
+                {modelInfo?.status || "Synthetic Baseline (Domain Rules)"}
+              </div>
+            </dl>
+          </div>
+        }
+      />
+
+      <div className="mx-auto max-w-7xl space-y-8 px-4 pt-8 sm:px-6 lg:px-8">
+        {searchParams.get("source") && (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-agri-primary bg-agri-surface/75 px-4 py-3 text-xs text-agri-ink">
+            <span>
+              Parameter terisi otomatis dari:{" "}
+              <strong className="text-agri-primary">{sourceParam}</strong>
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-agri-primary">
+              Sinkronisasi Wokwi aktif
+            </span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Form Input Hibrida (5 Cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-soft space-y-5">
-              
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 className="font-bold text-base text-agri-dark">
-                  Parameter Pengukuran Sampel
-                </h3>
-                <span className="text-[11px] font-medium text-slate-500">
-                  Data Hibrida (IoT + Manual)
-                </span>
+        <div className="grid gap-10 lg:grid-cols-[24.5rem_1fr] lg:items-start">
+          {/* Left: Sample Intake Sheet */}
+          <aside className="paper-panel p-5 sm:p-6">
+            <div className="border-b border-agri-primary/15 pb-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-agri-clay">
+                Lembar masukan
+              </p>
+              <h2 className="display-serif mt-1 text-2xl text-agri-ink">
+                Parameter pengukuran sampel
+              </h2>
+              <p className="mt-1 text-xs text-agri-muted">
+                Gabungan pembacaan sensor IoT dan pencatatan fisik manual.
+              </p>
+            </div>
+
+            <form onSubmit={handleRunClassification} className="mt-5 space-y-4">
+              <div>
+                <label
+                  htmlFor="sample-label"
+                  className="mb-1.5 block text-xs font-semibold text-agri-ink"
+                >
+                  Identitas sampel
+                </label>
+                <input
+                  id="sample-label"
+                  type="text"
+                  value={sampleLabel}
+                  onChange={(e) => setSampleLabel(e.target.value)}
+                  className="w-full border border-agri-primary/25 bg-white px-3 py-2 text-xs text-agri-ink focus:border-agri-primary focus:outline-none"
+                />
               </div>
 
-              <form onSubmit={handleRunClassification} className="space-y-4">
-                
-                {/* Label Sampel */}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Identitas Sampel
+                  <label
+                    htmlFor="amb-temp"
+                    className="mb-1 block text-xs font-medium text-agri-ink"
+                  >
+                    Suhu udara (°C)
                   </label>
                   <input
-                    type="text"
-                    value={sampleLabel}
-                    onChange={(e) => setSampleLabel(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agri-primary"
+                    id="amb-temp"
+                    type="number"
+                    step="0.1"
+                    value={temp}
+                    onChange={(e) => setTemp(e.target.value)}
+                    className="w-full border border-agri-primary/25 bg-white px-3 py-2 font-mono text-xs text-agri-ink focus:border-agri-primary focus:outline-none"
                   />
+                  <span className="mt-1 block text-[10px] text-agri-muted">
+                    Sensor DHT22
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Suhu */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Suhu Lingkungan (°C)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={temp}
-                      onChange={(e) => setTemp(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agri-primary"
-                    />
-                    <span className="text-[10px] text-slate-400">Dari sensor DHT22</span>
-                  </div>
-
-                  {/* RH */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Kelembapan Udara (% RH)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={humidity}
-                      onChange={(e) => setHumidity(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agri-primary"
-                    />
-                    <span className="text-[10px] text-slate-400">Dari sensor DHT22</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Massa */}
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Massa Sampel (g)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      value={mass}
-                      onChange={(e) => setMass(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agri-primary"
-                    />
-                    <span className="text-[10px] text-slate-400">Simulasi load cell</span>
-                  </div>
-
-                  {/* Kadar Air Biomassa */}
-                  <div>
-                    <label className="block text-xs font-bold text-agri-primary mb-1">
-                      Kadar Air Biomassa (% MC) *
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={moisture}
-                      onChange={(e) => setMoisture(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border-2 border-agri-emerald/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-agri-primary font-bold text-agri-dark"
-                    />
-                    <span className="text-[10px] text-agri-primary font-medium">Uji oven / probe terkalibrasi</span>
-                  </div>
-                </div>
-
-                {/* Umur Pascapanen */}
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-medium text-slate-700">
-                      Umur Pascapanen: <strong>{age} Hari</strong>
-                    </label>
-                    <span className="text-[10px] text-slate-400">Input Manual</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="50"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    className="w-full accent-agri-primary cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
-                    <span>1 hari (Sangat baru)</span>
-                    <span>15 hari</span>
-                    <span>50 hari (Lama)</span>
-                  </div>
-                </div>
-
-                {/* Kondisi Biji */}
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1.5">
-                    Kondisi Fisik Biji / Bunga (Pemeriksaan Manual)
+                  <label
+                    htmlFor="amb-rh"
+                    className="mb-1 block text-xs font-medium text-agri-ink"
+                  >
+                    Kelembapan (% RH)
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { val: "1", title: "Rontok / Hancur", sub: "Serbuk / Basah" },
-                      { val: "2", title: "Sebagian Pecah", sub: "Kering Sedang" },
-                      { val: "3", title: "Utuh / Segar", sub: "Calon Biji Prima" },
-                    ].map((opt) => (
+                  <input
+                    id="amb-rh"
+                    type="number"
+                    step="0.1"
+                    value={humidity}
+                    onChange={(e) => setHumidity(e.target.value)}
+                    className="w-full border border-agri-primary/25 bg-white px-3 py-2 font-mono text-xs text-agri-ink focus:border-agri-primary focus:outline-none"
+                  />
+                  <span className="mt-1 block text-[10px] text-agri-muted">
+                    Sensor DHT22
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label
+                    htmlFor="sample-mass"
+                    className="mb-1 block text-xs font-medium text-agri-ink"
+                  >
+                    Massa sampel (g)
+                  </label>
+                  <input
+                    id="sample-mass"
+                    type="number"
+                    step="0.5"
+                    value={mass}
+                    onChange={(e) => setMass(e.target.value)}
+                    className="w-full border border-agri-primary/25 bg-white px-3 py-2 font-mono text-xs text-agri-ink focus:border-agri-primary focus:outline-none"
+                  />
+                  <span className="mt-1 block text-[10px] text-agri-muted">
+                    Simulasi load cell
+                  </span>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="biomass-mc"
+                    className="mb-1 block text-xs font-bold text-agri-primary"
+                  >
+                    Kadar air (% MC) *
+                  </label>
+                  <input
+                    id="biomass-mc"
+                    type="number"
+                    step="0.1"
+                    value={moisture}
+                    onChange={(e) => setMoisture(e.target.value)}
+                    className="w-full border-2 border-agri-primary/50 bg-white px-3 py-2 font-mono text-xs font-bold text-agri-ink focus:border-agri-primary focus:outline-none"
+                  />
+                  <span className="mt-1 block text-[10px] text-agri-primary">
+                    Oven / probe terkalibrasi
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-t border-agri-primary/15 pt-4">
+                <div className="mb-2 flex items-baseline justify-between text-xs">
+                  <label
+                    htmlFor="post-harvest-age"
+                    className="font-semibold text-agri-ink"
+                  >
+                    Umur pascapanen
+                  </label>
+                  <span className="font-mono font-bold text-agri-primary tabular-nums">
+                    {age} hari
+                  </span>
+                </div>
+                <input
+                  id="post-harvest-age"
+                  type="range"
+                  min="1"
+                  max="50"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  className="field-range"
+                />
+                <div className="mt-1 flex justify-between font-mono text-[10px] text-agri-muted">
+                  <span>1 hari</span>
+                  <span>15 hari</span>
+                  <span>50 hari</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-agri-ink">
+                  Kondisi fisik biji / bunga (inspeksi manual)
+                </span>
+                <div className="grid grid-cols-3 border border-agri-primary/25 divide-x divide-agri-primary/20">
+                  {[
+                    { val: "1", title: "Rontok", sub: "Serbuk / basah" },
+                    { val: "2", title: "Pecah", sub: "Kering sedang" },
+                    { val: "3", title: "Utuh", sub: "Calon biji" },
+                  ].map((opt) => {
+                    const active = seedCondition === opt.val;
+                    return (
                       <button
                         type="button"
                         key={opt.val}
                         onClick={() => setSeedCondition(opt.val)}
-                        className={`p-2 rounded-lg border text-left transition-all ${
-                          seedCondition === opt.val
-                            ? "border-agri-primary bg-agri-surface ring-1 ring-agri-primary"
-                            : "border-slate-200 hover:border-slate-300"
+                        className={`p-2.5 text-left transition-colors ${
+                          active
+                            ? "bg-agri-primary text-white"
+                            : "bg-white text-agri-ink hover:bg-agri-bg"
                         }`}
                       >
-                        <div className="font-bold text-[11px] text-agri-dark">{opt.title}</div>
-                        <div className="text-[10px] text-slate-500">{opt.sub}</div>
+                        <div className="font-mono text-[10px] opacity-75">
+                          Skor {opt.val}
+                        </div>
+                        <div className="mt-0.5 text-xs font-bold">
+                          {opt.title}
+                        </div>
+                        <div
+                          className={`text-[10px] ${
+                            active ? "text-agri-bg/80" : "text-agri-muted"
+                          }`}
+                        >
+                          {opt.sub}
+                        </div>
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-agri-primary text-white font-bold text-sm hover:bg-agri-primaryLight transition-all shadow-md shadow-agri-primary/20"
-                  >
-                    <Sparkles className="w-4 h-4 text-agri-emeraldLight" />
-                    <span>{loading ? "Menganalisis..." : "Jalankan Inferensi Model ML"}</span>
-                  </button>
-                </div>
-
-              </form>
-            </div>
-
-            {/* Transparansi Model Info Card */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 text-xs space-y-3">
-              <div className="flex items-center justify-between font-bold text-slate-800">
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-agri-emerald" />
-                  Transparansi Algoritma & Model
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold text-[10px]">
-                  Tabular Only
-                </span>
               </div>
-              <ul className="space-y-1.5 text-slate-600 text-[11px]">
-                <li>• <strong>Model Utama:</strong> Random Forest Classifier (100 Estimators, max_depth=6)</li>
-                <li>• <strong>Model Pembanding:</strong> Decision Tree Classifier (max_depth=5)</li>
-                <li>• <strong>Deep Learning / CV:</strong> Tidak Digunakan (Sesuai Batasan Masalah Numerik)</li>
-                <li>• <strong>Status Model:</strong> {modelInfo?.status || "Synthetic Baseline (Domain Rules)"}</li>
-              </ul>
-            </div>
 
-          </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex min-h-12 w-full items-center justify-center gap-2 bg-agri-primary px-4 text-xs font-bold text-white transition-colors hover:bg-agri-primaryLight disabled:opacity-60 sm:text-sm"
+              >
+                <span>
+                  {loading
+                    ? "Menghitung inferensi..."
+                    : "Jalankan inferensi model"}
+                </span>
+                <ArrowRight className="h-4 w-4 text-agri-emeraldLight" />
+              </button>
+            </form>
+          </aside>
 
-          {/* Hasil Klasifikasi & Eksplanasi Saintifik (7 Cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            
+          {/* Right: Evaluation Output & Scientific Explanation */}
+          <div className="space-y-6">
             {result ? (
-              <div className="space-y-6">
-                
-                {/* Kartu Rekomendasi Utama */}
-                {(() => {
-                  const out = result.classification_output;
-                  const theme = getClassTheme(out.primary_recommendation);
-                  return (
-                    <div className={`rounded-2xl p-6 sm:p-8 border ${theme.border} ${theme.bg} shadow-soft space-y-6 transition-all`}>
-                      
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/80 border border-slate-200 text-slate-700">
-                            Hasil Rekomendasi AIoT
-                          </span>
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-agri-primary text-white">
-                            {out.model_status_badge}
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-600">
-                          Probabilitas: <strong className="text-slate-900 text-sm font-extrabold">{out.confidence_score}%</strong>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                          {getClassIcon(out.primary_recommendation)}
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-                            Potensi Pemanfaatan Terbaik:
-                          </p>
-                          <h2 className={`text-2xl sm:text-3xl font-extrabold ${theme.text}`}>
-                            {out.primary_recommendation}
-                          </h2>
-                        </div>
-                      </div>
-
-                      {/* Bar Probabilitas 3 Kelas */}
-                      <div className="space-y-3 pt-2">
-                        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                          Distribusi Probabilitas Kelas (Random Forest):
-                        </h4>
-                        <div className="space-y-2">
-                          {Object.entries(out.class_probabilities).map(([cls, prob]) => (
-                            <div key={cls} className="space-y-1">
-                              <div className="flex justify-between text-xs font-semibold">
-                                <span className="text-slate-700">{cls}</span>
-                                <span className="text-slate-900">{prob}%</span>
-                              </div>
-                              <div className="w-full h-2.5 rounded-full bg-slate-200/70 overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full transition-all duration-700 ${
-                                    cls === out.primary_recommendation ? theme.barColor : "bg-slate-400"
-                                  }`}
-                                  style={{ width: `${prob}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Model Pembanding: Decision Tree Agreement */}
-                      <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
-                          <GitCompare className="w-4 h-4 text-agri-primary" />
-                          <span className="text-slate-700">
-                            Model Pembanding ({out.comparative_model.algorithm}):
-                          </span>
-                          <strong className="text-slate-900">
-                            {out.comparative_model.result.predicted_class}
-                          </strong>
-                        </div>
-                        <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                          out.comparative_model.result.agreement_with_rf
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}>
-                          {out.comparative_model.result.agreement_with_rf ? "Sepakat (100% Agreement)" : "Perbedaan Kelas"}
+              (() => {
+                const out = result.classification_output;
+                return (
+                  <div className="space-y-6">
+                    {/* Primary Decision Sheet */}
+                    <section className="border border-agri-ink/25 bg-white/85 p-6 sm:p-8">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-agri-primary/15 pb-4 text-xs">
+                        <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-agri-clay">
+                          Hasil klasifikasi · {result.sample_label}
+                        </span>
+                        <span className="border border-agri-primary/25 bg-agri-surface/70 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-agri-primary">
+                          {out.model_status_badge}
                         </span>
                       </div>
 
-                    </div>
-                  );
-                })()}
-
-                {/* Eksplanasi Saintifik & Rekomendasi Uji Laboratorium */}
-                <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-soft space-y-6">
-                  
-                  {/* Faktor Penentu */}
-                  <div className="space-y-2.5">
-                    <h4 className="font-bold text-sm text-agri-dark flex items-center gap-2">
-                      <FileCheck2 className="w-4 h-4 text-agri-emerald" />
-                      Faktor Ilmiah yang Memengaruhi Rekomendasi:
-                    </h4>
-                    <ul className="space-y-2 text-xs text-slate-700 pl-1">
-                      {result.classification_output.scientific_explanation.primary_factors.map((f, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-agri-emerald mt-1.5 shrink-0"></span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Rekomendasi Uji Lanjutan */}
-                  <div className="space-y-2.5 pt-4 border-t border-slate-100">
-                    <h4 className="font-bold text-sm text-agri-dark flex items-center gap-2">
-                      <FlaskConical className="w-4 h-4 text-agri-primary" />
-                      Rekomendasi Pengujian Laboratorium Lanjutan:
-                    </h4>
-                    <div className="space-y-2">
-                      {result.classification_output.scientific_explanation.recommended_lab_tests.map((test, i) => (
-                        <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-start gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-agri-emerald shrink-0 mt-0.5" />
-                          <span>{test}</span>
+                      <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-agri-muted">
+                            {getClassIcon(out.primary_recommendation)}
+                            <span>Arah pemanfaatan utama</span>
+                          </div>
+                          <h2 className="display-serif text-4xl leading-none text-agri-ink sm:text-6xl">
+                            {out.primary_recommendation}
+                          </h2>
                         </div>
-                      ))}
+                        <div className="border-t border-agri-primary/15 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0 sm:text-right">
+                          <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-agri-muted">
+                            Probabilitas RF
+                          </span>
+                          <span className="display-serif text-5xl leading-none text-agri-primary tabular-nums">
+                            {out.confidence_score}%
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Probability Distribution */}
+                      <div className="mt-8 space-y-3 border-t border-agri-primary/15 pt-6">
+                        <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-muted">
+                          Distribusi probabilitas 3 kelas (Random Forest)
+                        </h3>
+                        <div className="space-y-3">
+                          {Object.entries(out.class_probabilities).map(
+                            ([cls, prob]) => {
+                              const isPrimary =
+                                cls === out.primary_recommendation;
+                              return (
+                                <div key={cls} className="space-y-1.5">
+                                  <div className="flex items-baseline justify-between text-xs">
+                                    <span
+                                      className={
+                                        isPrimary
+                                          ? "font-bold text-agri-ink"
+                                          : "text-agri-muted"
+                                      }
+                                    >
+                                      {cls}
+                                    </span>
+                                    <span className="font-mono font-semibold text-agri-ink tabular-nums">
+                                      {prob}%
+                                    </span>
+                                  </div>
+                                  <div className="h-2 w-full bg-agri-primary/10">
+                                    <div
+                                      className={`h-full transition-all duration-500 ${
+                                        isPrimary
+                                          ? getBarTone(cls)
+                                          : "bg-agri-muted/40"
+                                      }`}
+                                      style={{ width: `${prob}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Decision Tree Agreement */}
+                      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-agri-primary/15 pt-4 text-xs">
+                        <div className="flex items-center gap-2 text-agri-muted">
+                          <GitCompare className="h-4 w-4 text-agri-primary" />
+                          <span>
+                            Pembanding ({out.comparative_model.algorithm}):{" "}
+                            <strong className="text-agri-ink">
+                              {out.comparative_model.result.predicted_class}
+                            </strong>
+                          </span>
+                        </div>
+                        <span
+                          className={`border px-2.5 py-0.5 font-mono text-[11px] font-bold ${
+                            out.comparative_model.result.agreement_with_rf
+                              ? "border-agri-primary/30 bg-agri-surface text-agri-primary"
+                              : "border-agri-clay/40 bg-[#F5E6DC] text-agri-clay"
+                          }`}
+                        >
+                          {out.comparative_model.result.agreement_with_rf
+                            ? "Sepakat dengan RF"
+                            : "Berbeda dengan RF"}
+                        </span>
+                      </div>
+                    </section>
+
+                    {/* Scientific Explanation & Lab Tests */}
+                    <section className="paper-panel grid gap-8 p-6 sm:grid-cols-2 sm:p-7">
+                      <div className="space-y-3">
+                        <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-clay">
+                          Faktor penentu rekomendasi
+                        </h3>
+                        <ul className="space-y-2.5 text-xs leading-6 text-agri-ink">
+                          {out.scientific_explanation.primary_factors.map(
+                            (factor, i) => (
+                              <li key={i} className="flex items-start gap-2.5">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 bg-agri-primary" />
+                                <span>{factor}</span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+
+                      <div className="space-y-3 border-t border-agri-primary/15 pt-5 sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0">
+                        <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-primary">
+                          Uji laboratorium lanjutan
+                        </h3>
+                        <ul className="space-y-2.5 text-xs leading-6 text-agri-ink">
+                          {out.scientific_explanation.recommended_lab_tests.map(
+                            (test, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <Check className="mt-1 h-3.5 w-3.5 shrink-0 text-agri-primary" />
+                                <span>{test}</span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                    </section>
+
+                    {/* Jury Integrity Note */}
+                    <div className="dossier-note space-y-1.5 px-5 py-4 text-xs">
+                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-agri-clay">
+                        Catatan integritas ilmiah
+                      </p>
+                      <ul className="space-y-1 leading-6 text-agri-ink">
+                        {out.scientific_explanation.scientific_disclaimers.map(
+                          (d, i) => (
+                            <li key={i}>— {d}</li>
+                          )
+                        )}
+                      </ul>
                     </div>
                   </div>
-
-                  {/* Batasan Ilmiah */}
-                  <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs space-y-1">
-                    <div className="font-bold flex items-center gap-1.5">
-                      <AlertCircle className="w-4 h-4 text-agri-amber" />
-                      Catatan Integritas Ilmiah (Jury Review Note):
-                    </div>
-                    <ul className="list-disc pl-5 text-[11px] text-amber-800 space-y-0.5">
-                      {result.classification_output.scientific_explanation.scientific_disclaimers.map((d, i) => (
-                        <li key={i}>{d}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                </div>
-
-              </div>
+                );
+              })()
             ) : (
-              <div className="bg-white rounded-2xl p-12 border border-slate-200 text-center space-y-4 shadow-soft">
-                <div className="w-16 h-16 rounded-2xl bg-agri-surface flex items-center justify-center text-agri-primary mx-auto">
-                  <BarChart3 className="w-8 h-8 text-agri-emerald" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-lg text-agri-dark">
-                    Menunggu Eksekusi Inferensi
-                  </h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Masukkan parameter di panel sebelah kiri atau ambil sampel dari halaman simulasi Wokwi untuk melihat hasil klasifikasi dan rekomendasi saintifik.
+              <div className="paper-panel flex flex-col justify-between gap-6 p-8 sm:p-10">
+                <div className="space-y-3">
+                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-agri-clay">
+                    Siap diuji
+                  </p>
+                  <h2 className="display-serif text-3xl text-agri-ink sm:text-4xl">
+                    Menunggu eksekusi inferensi sampel.
+                  </h2>
+                  <p className="max-w-lg text-sm leading-7 text-agri-muted">
+                    Atur parameter di lembar sebelah kiri atau teruskan pembacaan
+                    dari halaman simulasi Wokwi untuk melihat distribusi
+                    probabilitas, kesepakatan model pembanding, dan daftar uji
+                    laboratorium yang disarankan.
                   </p>
                 </div>
-                <button
-                  onClick={() => handleRunClassification()}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition-colors"
-                >
-                  Jalankan Contoh Default
-                </button>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => handleRunClassification()}
+                    className="inline-flex min-h-11 items-center gap-2 border border-agri-primary/35 bg-white px-5 text-xs font-bold text-agri-primary transition-colors hover:bg-agri-primary hover:text-white"
+                  >
+                    <span>Jalankan contoh sampel bawaan</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             )}
-
           </div>
-
         </div>
-
       </div>
     </div>
   );
@@ -580,14 +625,15 @@ function ClassificationContent() {
 
 export default function ClassificationPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-agri-bg">
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 text-center space-y-2">
-          <div className="w-8 h-8 rounded-full border-2 border-agri-primary border-t-transparent animate-spin mx-auto"></div>
-          <div className="text-xs font-bold text-slate-700">Memuat Modul Klasifikasi GlagahSmart...</div>
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 lg:px-8">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-agri-muted">
+            Memuat modul klasifikasi GlagahSmart...
+          </p>
         </div>
-      </div>
-    }>
+      }
+    >
       <ClassificationContent />
     </Suspense>
   );

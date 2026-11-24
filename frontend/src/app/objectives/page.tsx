@@ -1,134 +1,184 @@
 import React from "react";
 import Link from "next/link";
-import { 
-  Target, 
-  Users, 
-  CheckCircle2, 
-  Award, 
-  ArrowRight,
-  Sparkles,
-  Cpu,
-  Layers
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import DossierHeader from "@/components/layout/DossierHeader";
+
+const targetUsers = [
+  {
+    title: "Petani Glagah",
+    role: "Pelaku hulu",
+    benefit:
+      "Panduan waktu panen ideal serta identifikasi potensi benih perbanyakan mandiri.",
+  },
+  {
+    title: "Pengrajin Sapu",
+    role: "Pelaku hilir",
+    benefit:
+      "Membaca arah nilai ekonomi baru dari serbuk rontokan bunga hasil pemukulan sapu.",
+  },
+  {
+    title: "Pengepul Glagah",
+    role: "Rantai distribusi",
+    benefit:
+      "Standarisasi kadar air dan kondisi bunga sebelum didistribusikan ke pengrajin.",
+  },
+  {
+    title: "Koperasi & Kelompok Tani",
+    role: "Komunitas",
+    benefit:
+      "Dasar perencanaan unit usaha bersama pengolahan briket biomassa atau kompos.",
+  },
+  {
+    title: "UMKM Biomassa",
+    role: "Pemanfaat energi",
+    benefit:
+      "Pasokan bahan baku briket dengan spesifikasi kadar air yang lebih terukur.",
+  },
+  {
+    title: "Peneliti & Akademisi",
+    role: "Riset lanjutan",
+    benefit:
+      "Basis data numerik parameter glagah untuk riset agriteknologi terapan.",
+  },
+  {
+    title: "Masyarakat Umum",
+    role: "Edukasi lingkungan",
+    benefit:
+      "Wawasan ekonomi sirkular dan pengurangan pembakaran terbuka limbah pertanian.",
+  },
+  {
+    title: "Dewan Juri IDTC 2.0",
+    role: "Evaluator",
+    benefit:
+      "Demonstrasi sistem AIoT terpadu yang transparan, terukur, dan jujur secara ilmiah.",
+  },
+];
+
+const systemGoals = [
+  {
+    title: "Mendukung penilaian awal karakteristik bunga glagah",
+    desc: "Menyediakan instrumen pengukuran cepat berbasis sensor untuk membaca parameter fisis krusial pada tahap awal sebelum uji laboratorium.",
+  },
+  {
+    title: "Memberikan rekomendasi potensi pemanfaatan berbasis data",
+    desc: "Menggantikan perkiraan subjektif dengan klasifikasi Machine Learning tabular (Random Forest & Decision Tree).",
+  },
+  {
+    title: "Mendemonstrasikan akuisisi data sensor mikroelektronika",
+    desc: "Mengimplementasikan simulasi rangkaian ESP32 di Wokwi sebagai purwarupa terverifikasi sebelum fabrikasi PCB fisik.",
+  },
+  {
+    title: "Mengimplementasikan Machine Learning yang ringkas & tepat guna",
+    desc: "Menghindari overengineering (tanpa deep learning atau computer vision) dengan berfokus pada fitur numerik tabular.",
+  },
+  {
+    title: "Mendorong ekonomi sirkular berkelanjutan di sentra glagah",
+    desc: "Mengubah residu sortasi menjadi bahan baku terpilah yang berpotensi memberi nilai tambah di Pemalang dan Purbalingga.",
+  },
+];
 
 export default function ObjectivesPage() {
-  const targetUsers = [
-    { title: "Petani Glagah", role: "Pelaku Hulu", benefit: "Mendapat panduan waktu panen ideal & potensi benih perbanyakan mandiri." },
-    { title: "Pengrajin Sapu", role: "Pelaku Hilir", benefit: "Menemukan nilai ekonomi baru dari serbuk rontokan bunga hasil pemukulan sapu." },
-    { title: "Pengepul Hasil Glagah", role: "Rantai Distribusi", benefit: "Standarisasi kadar air dan kualitas bunga sebelum didistribusikan ke pengrajin." },
-    { title: "Koperasi & Kelompok Tani", role: "Organisasi Komunitas", benefit: "Dasar perencanaan unit usaha bersama pembuatan briket atau pupuk organik." },
-    { title: "UMKM Pengolahan Biomassa", role: "Pemanfaat Energi", benefit: "Pasokan bahan baku briket berkalori tinggi dengan spesifikasi kadar air teruji." },
-    { title: "Peneliti & Akademisi", role: "Riset Lanjutan", benefit: "Basis data numerik parameter glagah untuk riset agriteknologi terapan." },
-    { title: "Masyarakat Umum", role: "Edukasi Lingkungan", benefit: "Wawasan ekonomi sirkular dan pengurangan pembakaran limbah pertanian." },
-    { title: "Dewan Juri IDTC 2.0", role: "Evaluator Kompetisi", benefit: "Demonstrasi sistem AIoT terpadu yang transparan, terukur, dan saintifik." },
-  ];
-
-  const systemGoals = [
-    {
-      title: "Mendukung Penilaian Awal Karakteristik Bunga Glagah",
-      desc: "Menyediakan instrumen pengukuran cepat berbasis sensor untuk membaca parameter fisis krusial tanpa alat laboratorium yang mahal di tahap awal."
-    },
-    {
-      title: "Memberikan Rekomendasi Potensi Pemanfaatan Berdasarkan Data",
-      desc: "Menghilangkan perkiraan subjektif pengrajin dengan menyajikan klasifikasi berbasis Machine Learning tabular (Random Forest & Decision Tree)."
-    },
-    {
-      title: "Mendemonstrasikan Akuisisi Data Sensor Mikroelektronika",
-      desc: "Mengimplementasikan simulasi sirkuit mikrokontroler ESP32 pada Wokwi sebagai prototipe siap pakai sebelum fabrikasi hardware PCB fisik."
-    },
-    {
-      title: "Mengimplementasikan Machine Learning yang Relevan & Ringkas",
-      desc: "Menghindari overengineering (tanpa deep learning atau computer vision yang boros daya) dan berfokus pada data numerik tabular yang tepat guna."
-    },
-    {
-      title: "Mendorong Terwujudnya Ekonomi Sirkular Berkelanjutan",
-      desc: "Mengubah status residu dari limbah nir-nilai menjadi bahan baku bernilai tambah tinggi di Kabupaten Pemalang dan Purbalingga."
-    }
-  ];
-
   return (
-    <div className="py-12 bg-agri-bg min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Header */}
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agri-surface border border-agri-emerald/30 text-agri-primary text-xs font-semibold">
-            <Target className="w-4 h-4 text-agri-emerald" />
-            <span>Tujuan & Sasaran Inovasi</span>
+    <div className="pb-20">
+      <DossierHeader
+        eyebrow="Tujuan & sasaran inovasi"
+        title={
+          <>
+            Arah kerja sistem{" "}
+            <span className="text-agri-primary">&amp; siapa yang terbantu.</span>
+          </>
+        }
+        summary="Merumuskan lima sasaran teknis GlagahSmart AIoT beserta delapan kelompok pemangku kepentingan di sepanjang rantai nilai glagah Jawa Tengah."
+        maxWidthClass="max-w-6xl"
+      />
+
+      <div className="mx-auto max-w-6xl space-y-16 px-4 pt-12 sm:px-6 lg:px-8">
+        {/* Five System Objectives */}
+        <section className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr]">
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+              Sasaran sistem
+            </p>
+            <h2 className="display-serif text-3xl leading-tight text-agri-ink sm:text-4xl">
+              Lima tujuan utama pengembangan.
+            </h2>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-agri-dark tracking-tight">
-            Tujuan Pengembangan Sistem & Target Pengguna
-          </h1>
-          <p className="text-slate-600 text-base leading-relaxed">
-            Menegaskan arah strategis inovasi GlagahSmart AIoT dalam menciptakan dampak nyata bagi seluruh pemangku kepentingan rantai nilai glagah di Jawa Tengah.
-          </p>
-        </div>
 
-        {/* 5 Tujuan Utama Sistem */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-soft space-y-6">
-          <h2 className="text-2xl font-bold text-agri-dark flex items-center gap-2.5">
-            <Sparkles className="w-6 h-6 text-agri-primary" />
-            Lima Tujuan Utama Sistem GlagahSmart AIoT
-          </h2>
-
-          <div className="space-y-4">
+          <div className="divide-y divide-agri-primary/15 border-y border-agri-primary/20 bg-white/60">
             {systemGoals.map((g, i) => (
-              <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-4">
-                <span className="w-8 h-8 rounded-lg bg-agri-surface text-agri-primary font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+              <article
+                key={g.title}
+                className="grid gap-3 px-5 py-5 sm:grid-cols-[3rem_1fr]"
+              >
+                <span className="display-serif text-3xl leading-none text-agri-clay">
                   0{i + 1}
                 </span>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-sm text-agri-dark">{g.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{g.desc}</p>
+                  <h3 className="text-base font-bold text-agri-ink">
+                    {g.title}
+                  </h3>
+                  <p className="text-xs leading-6 text-agri-muted sm:text-sm">
+                    {g.desc}
+                  </p>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* 8 Target Pengguna (Audiens Ekosistem) */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-agri-dark flex items-center gap-2.5">
-              <Users className="w-6 h-6 text-agri-emerald" />
-              Kelompok Pengguna & Sasaran Manfaat
-            </h2>
-            <p className="text-xs text-slate-600">
-              Sistem dirancang agar dapat diakses dan memberi manfaat langsung bagi 8 pemangku kepentingan:
+        {/* Eight Target Stakeholder Groups */}
+        <section className="space-y-6 border-t border-agri-primary/20 pt-10">
+          <div className="max-w-2xl space-y-2">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+              Ekosistem pengguna
             </p>
+            <h2 className="display-serif text-3xl text-agri-ink sm:text-4xl">
+              Delapan pemangku kepentingan sasaran.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {targetUsers.map((u, i) => (
-              <div key={i} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-2 flex flex-col justify-between">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-agri-primary uppercase tracking-wider bg-agri-surface px-2 py-0.5 rounded">
+          <div className="grid border-l border-t border-agri-primary/20 bg-white/75 sm:grid-cols-2 lg:grid-cols-4">
+            {targetUsers.map((u) => (
+              <article
+                key={u.title}
+                className="flex flex-col justify-between border-b border-r border-agri-primary/20 p-5"
+              >
+                <div>
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-agri-primary">
                     {u.role}
                   </span>
-                  <h4 className="font-bold text-sm text-agri-dark pt-1">{u.title}</h4>
+                  <h3 className="mt-1.5 text-sm font-bold text-agri-ink">
+                    {u.title}
+                  </h3>
                 </div>
-                <p className="text-[11px] text-slate-600 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="mt-4 border-t border-agri-primary/10 pt-3 text-xs leading-6 text-agri-muted">
                   {u.benefit}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Action Link */}
-        <div className="p-6 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-slate-300">
-            Ingin melihat bagaimana solusi inovasi ini direalisasikan dalam 3 jalur produk biomassa?
+        {/* Closing Band */}
+        <section className="bg-agri-primary px-6 py-8 text-white sm:px-8">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-emeraldLight">
+                Langkah berikutnya
+              </p>
+              <h2 className="display-serif mt-1 text-3xl">
+                Lihat realisasi solusi dalam tiga jalur produk biomassa.
+              </h2>
+            </div>
+            <Link
+              href="/solution"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 bg-white px-5 text-xs font-bold text-agri-primary hover:bg-agri-bg sm:text-sm"
+            >
+              <span>Eksplorasi Solusi Inovasi</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
-          <Link
-            href="/solution"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-agri-emerald text-slate-950 font-bold text-xs hover:bg-agri-emeraldLight transition-colors shrink-0"
-          >
-            <span>Eksplorasi Solusi Inovasi</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
+        </section>
       </div>
     </div>
   );
