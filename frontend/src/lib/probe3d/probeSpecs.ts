@@ -159,3 +159,31 @@ export const DEFAULT_PREVIEW_STATE: ProbeLiveVisualState = {
   recommendation: "BENIH / BRIKET",
   highTempWarning: false,
 };
+
+export interface ProbeHudMetrics {
+  coreTempText: string;
+  ambientTempText: string;
+  ambientHumText: string;
+  deltaText: string;
+  isOverheat: boolean;
+}
+
+export function formatProbeHudMetrics(
+  state: ProbeLiveVisualState
+): ProbeHudMetrics {
+  const coreFinite = Number.isFinite(state.coreTemp);
+  const ambFinite = Number.isFinite(state.ambientTemp);
+  const humFinite = Number.isFinite(state.ambientHum);
+  const deltaFinite = Number.isFinite(state.delta);
+
+  return {
+    coreTempText: coreFinite ? `${state.coreTemp.toFixed(1)}°C` : "--",
+    ambientTempText: ambFinite ? `${state.ambientTemp.toFixed(1)}°C` : "--",
+    ambientHumText: humFinite ? `${Math.round(state.ambientHum)}%` : "--",
+    deltaText: deltaFinite
+      ? `${state.delta >= 0 ? "+" : ""}${state.delta.toFixed(1)}°C`
+      : "--",
+    isOverheat:
+      Boolean(state.highTempWarning) || (coreFinite && state.coreTemp >= 60),
+  };
+}

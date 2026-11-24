@@ -23,6 +23,7 @@ import {
   PROBE_PART_SPECS,
   ProbeLiveVisualState,
   ProbePartId,
+  formatProbeHudMetrics,
 } from "@/lib/probe3d/probeSpecs";
 
 export interface GlagahProbe3DCanvasProps {
@@ -51,6 +52,7 @@ export default function GlagahProbe3DCanvas({
   const currentExplodedRef = useRef<number>(0);
   const xrayRef = useRef<boolean>(false);
   const selectedPartRef = useRef<ProbePartId | null>(null);
+  const isExportingRef = useRef<boolean>(false);
   const cameraGoalRef = useRef<{
     pos: THREE.Vector3;
     target: THREE.Vector3;
@@ -58,7 +60,7 @@ export default function GlagahProbe3DCanvas({
 
   useEffect(() => {
     liveStateRef.current = liveState;
-    if (rigRef.current) {
+    if (rigRef.current && !isExportingRef.current) {
       applyProbeLiveState(rigRef.current, liveState);
     }
   }, [liveState]);
@@ -69,7 +71,7 @@ export default function GlagahProbe3DCanvas({
 
   useEffect(() => {
     xrayRef.current = xray;
-    if (rigRef.current) {
+    if (rigRef.current && !isExportingRef.current) {
       applyProbeViewMode(rigRef.current, {
         exploded: currentExplodedRef.current,
         xray,
@@ -80,7 +82,7 @@ export default function GlagahProbe3DCanvas({
 
   useEffect(() => {
     selectedPartRef.current = selectedPart;
-    if (rigRef.current) {
+    if (rigRef.current && !isExportingRef.current) {
       applyProbeViewMode(rigRef.current, {
         exploded: currentExplodedRef.current,
         xray: xrayRef.current,
@@ -110,15 +112,16 @@ export default function GlagahProbe3DCanvas({
   };
 
   const handleExportGlb = async () => {
-    if (!rigRef.current || exporting) return;
+    if (!rigRef.current || isExportingRef.current) return;
+    isExportingRef.current = true;
     setExporting(true);
     setExportMessage(null);
     try {
-      const blob = await exportProbeToGlbBlob(rigRef.current, {
+      const blob = await exportProbeToGlbBlob(rigRef.current, () => ({
         exploded: currentExplodedRef.current,
         xray: xrayRef.current,
         selectedPart: selectedPartRef.current,
-      });
+      }));
       downloadGlbBlob(blob, "glagahsmart-iot-probe.glb");
       setExportMessage("glagahsmart-iot-probe.glb berhasil diunduh.");
       setTimeout(() => setExportMessage(null), 3500);
@@ -126,6 +129,10 @@ export default function GlagahProbe3DCanvas({
       setExportMessage("Gagal mengekspor berkas .GLB pada browser ini.");
       setTimeout(() => setExportMessage(null), 4000);
     } finally {
+      isExportingRef.current = false;
+      if (rigRef.current) {
+        applyProbeLiveState(rigRef.current, liveStateRef.current);
+      }
       setExporting(false);
     }
   };
@@ -257,7 +264,19 @@ export default function GlagahProbe3DCanvas({
       pointerDownY = ev.clientY;
     };
 
+    let isUnmounting = false;
+    const handleContextLost = (ev: Event) => {
+      ev.preventDefault();
+      if (!isUnmounting) {
+        setWebglError(
+          "Konteks WebGL terputus oleh browser. Muat ulang halaman atau gunakan tab Skematik (2D)."
+        );
+      }
+    };
+    renderer.domElement.addEventListener("webglcontextlost", handleContextLost);
+
     const onPointerUp = (ev: PointerEvent) => {
+      if (isExportingRef.current) return;
       const dx = ev.clientX - pointerDownX;
       const dy = ev.clientY - pointerDownY;
       if (Math.hypot(dx, dy) > 5) return;
@@ -295,6 +314,7 @@ export default function GlagahProbe3DCanvas({
     let rafId = 0;
     const animate = () => {
       rafId = window.requestAnimationFrame(animate);
+      if (isExportingRef.current) return;
 
       const diffExploded =
         targetExplodedRef.current - currentExplodedRef.current;
@@ -329,12 +349,18 @@ export default function GlagahProbe3DCanvas({
     animate();
 
     return () => {
+      isUnmounting = true;
       window.cancelAnimationFrame(rafId);
       resizeObserver.disconnect();
       controls.removeEventListener("start", handleUserOrbitStart);
+      renderer.domElement.removeEventListener(
+        "webglcontextlost",
+        handleContextLost
+      );
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
       renderer.domElement.removeEventListener("pointerup", onPointerUp);
       controls.dispose();
+      keyLight.dispose();
       disposeProbeRig(rig);
       rigRef.current = null;
       padGeom.dispose();
@@ -342,6 +368,7 @@ export default function GlagahProbe3DCanvas({
       stageRingGeoms.forEach((g) => g.dispose());
       stageRingMat.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
@@ -349,6 +376,7 @@ export default function GlagahProbe3DCanvas({
   }, []);
 
   const selectedSpec = selectedPart ? PROBE_PART_SPECS[selectedPart] : null;
+  const hud = formatProbeHudMetrics(liveState);
   const isGreenOn = liveState.hardwareClass === "CENDERUNG KERING";
   const isYellowOn = liveState.hardwareClass === "TIDAK PASTI";
   const isRedOn = liveState.hardwareClass === "AKTIF/LEMBAP";
@@ -369,8 +397,9 @@ export default function GlagahProbe3DCanvas({
               <button
                 key={id}
                 type="button"
+                disabled={exporting}
                 onClick={() => setSelectedPart(active ? null : id)}
-                className={`border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                className={`border px-2.5 py-1 font-mono text-[11px] transition-colors disabled:opacity-50 ${
                   active
                     ? "border-agri-emeraldLight bg-agri-primary text-white"
                     : "border-agri-bg/20 bg-transparent text-agri-bg/75 hover:border-agri-bg/45 hover:text-white"
@@ -383,8 +412,9 @@ export default function GlagahProbe3DCanvas({
           {(selectedPart || exploded || xray || activePreset !== "full") && (
             <button
               type="button"
+              disabled={exporting}
               onClick={handleResetView}
-              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[11px] text-agri-amberLight hover:text-white"
+              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[11px] text-agri-amberLight hover:text-white disabled:opacity-50"
             >
               <RotateCcw className="h-3 w-3" />
               <span>Reset</span>
@@ -397,8 +427,9 @@ export default function GlagahProbe3DCanvas({
           <button
             type="button"
             aria-pressed={exploded}
+            disabled={exporting}
             onClick={() => setExploded((v) => !v)}
-            className={`inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+            className={`inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] transition-colors disabled:opacity-50 ${
               exploded
                 ? "border-agri-amberLight bg-agri-clay text-white"
                 : "border-agri-bg/25 bg-transparent text-agri-bg/85 hover:border-agri-bg/50"
@@ -411,8 +442,9 @@ export default function GlagahProbe3DCanvas({
           <button
             type="button"
             aria-pressed={xray}
+            disabled={exporting}
             onClick={() => setXray((v) => !v)}
-            className={`inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+            className={`inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] transition-colors disabled:opacity-50 ${
               xray
                 ? "border-agri-emeraldLight bg-agri-primary text-white"
                 : "border-agri-bg/25 bg-transparent text-agri-bg/85 hover:border-agri-bg/50"
@@ -496,18 +528,15 @@ export default function GlagahProbe3DCanvas({
                 <span className="text-agri-bg/90">
                   {liveState.hardwareClass}
                 </span>
-                {liveState.highTempWarning && (
+                {hud.isOverheat && (
                   <span className="text-[#E89B7C]">· ALARM ≥60°C</span>
                 )}
               </div>
               <div className="mt-1 flex flex-wrap gap-x-3 text-[10px] text-agri-bg/65 tabular-nums">
-                <span>T_inti {liveState.coreTemp.toFixed(1)}°C</span>
-                <span>T_udara {liveState.ambientTemp.toFixed(1)}°C</span>
-                <span>RH {Math.round(liveState.ambientHum)}%</span>
-                <span>
-                  ΔT {liveState.delta >= 0 ? "+" : ""}
-                  {liveState.delta.toFixed(1)}°C
-                </span>
+                <span>T_inti {hud.coreTempText}</span>
+                <span>T_udara {hud.ambientTempText}</span>
+                <span>RH {hud.ambientHumText}</span>
+                <span>ΔT {hud.deltaText}</span>
               </div>
             </div>
 

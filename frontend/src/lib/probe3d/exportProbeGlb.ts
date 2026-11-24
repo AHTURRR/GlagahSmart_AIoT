@@ -10,7 +10,7 @@ export interface ProbeViewSnapshot {
 
 export async function exportProbeToGlbBlob(
   rig: GlagahProbeRig,
-  currentView: ProbeViewSnapshot
+  currentView: ProbeViewSnapshot | (() => ProbeViewSnapshot)
 ): Promise<Blob> {
   const exporter = new GLTFExporter();
 
@@ -42,7 +42,9 @@ export async function exportProbeToGlbBlob(
 
     return new Blob([result], { type: "model/gltf-binary" });
   } finally {
-    applyProbeViewMode(rig, currentView);
+    const restoredView =
+      typeof currentView === "function" ? currentView() : currentView;
+    applyProbeViewMode(rig, restoredView);
     rig.root.updateMatrixWorld(true);
   }
 }

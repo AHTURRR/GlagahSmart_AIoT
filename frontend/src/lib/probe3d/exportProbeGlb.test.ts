@@ -41,3 +41,29 @@ test("exports assembled binary glTF 2.0 (.glb) and restores viewer state afterwa
 
   disposeProbeRig(rig);
 });
+
+test("exportProbeToGlbBlob restores latest view state via resolver callback", async () => {
+  const rig = buildGlagahProbe();
+  let liveView: { exploded: number; xray: boolean; selectedPart: "esp32" | "ds18b20" | null } = {
+    exploded: 0,
+    xray: false,
+    selectedPart: null,
+  };
+  applyProbeViewMode(rig, liveView);
+
+  const promise = exportProbeToGlbBlob(rig, () => liveView);
+  // Simulate latest view updating before export completes
+  liveView = { exploded: 1, xray: true, selectedPart: "ds18b20" };
+
+  const blob = await promise;
+  assert.ok(blob.size > 1000);
+  assert.ok(
+    rig.parts.housing.position.distanceTo(rig.basePositions.housing) > 0.1
+  );
+  for (const mat of rig.housingShellMaterials) {
+    assert.equal(mat.transparent, true);
+    assert.ok(mat.opacity <= 0.35);
+  }
+
+  disposeProbeRig(rig);
+});
