@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import DossierHeader from "@/components/layout/DossierHeader";
+import GlagahProbe3DView from "@/components/simulation/GlagahProbe3DView";
 
 const pipelineStages = [
   {
@@ -128,6 +129,31 @@ export default function TechnologyPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Interactive 3D Hardware Representation */}
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
+                Wujud fisik perangkat
+              </p>
+              <h2 className="display-serif mt-1 text-3xl text-agri-ink sm:text-4xl">
+                Model 3D Handheld Field Insertion Probe
+              </h2>
+            </div>
+            <Link
+              href="/simulation"
+              className="inline-flex min-h-10 items-center gap-2 border border-agri-primary/30 bg-white px-4 text-xs font-bold text-agri-primary transition-colors hover:bg-agri-primary hover:text-white"
+            >
+              <span>Uji respon LED &amp; sensor live</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <div className="border border-agri-ink/25 bg-[#FBF9F4]">
+            <GlagahProbe3DView compact />
           </div>
         </section>
 

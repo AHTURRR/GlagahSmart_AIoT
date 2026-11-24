@@ -6,6 +6,7 @@ import {
   RotateCcw,
   Volume2,
 } from "lucide-react";
+import GlagahProbe3DView from "./GlagahProbe3DView";
 
 export interface WokwiLiveState {
   coreTemp: number; // DS18B20 suhu inti tumpukan (°C)
@@ -273,9 +274,9 @@ export default function WokwiCircuitView({
 }: {
   liveState: WokwiLiveState;
 }) {
-  const [activeTab, setActiveTab] = useState<"schematic" | "live" | "pinout">(
-    "schematic"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "model3d" | "schematic" | "live" | "pinout"
+  >("model3d");
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
   const [embedKey, setEmbedKey] = useState(0);
 
@@ -327,16 +328,19 @@ export default function WokwiCircuitView({
             <span className="text-agri-bg/70">MQTT + EDGE LED</span>
           </div>
           <h2 className="display-serif text-2xl leading-none text-agri-bg sm:text-[1.75rem]">
-            Skematik Probe Pemantau Limbah Glagah
+            {activeTab === "model3d"
+              ? "Model 3D Perangkat Probe GlagahSmart"
+              : "Skematik Probe Pemantau Limbah Glagah"}
           </h2>
         </div>
 
         <div
           role="tablist"
           aria-label="Mode tampilan rangkaian"
-          className="inline-flex border border-agri-bg/20 divide-x divide-agri-bg/20"
+          className="inline-flex flex-wrap border border-agri-bg/20 divide-x divide-agri-bg/20"
         >
           {[
+            { id: "model3d" as const, label: "Model 3D Alat" },
             { id: "schematic" as const, label: "Skematik" },
             { id: "live" as const, label: "Simulator Wokwi" },
             { id: "pinout" as const, label: "Pinout & BOM" },
@@ -361,6 +365,9 @@ export default function WokwiCircuitView({
           })}
         </div>
       </div>
+
+      {/* TAB 0: INTERACTIVE 3D HARDWARE PROBE MODEL */}
+      {activeTab === "model3d" && <GlagahProbe3DView liveState={liveState} />}
 
       {/* TAB 1: INTERACTIVE ESD-MAT SCHEMATIC */}
       {activeTab === "schematic" && (
@@ -1635,37 +1642,39 @@ export default function WokwiCircuitView({
               </p>
             )}
           </div>
+        </div>
+      )}
 
-          {/* Minimalist Serial Monitor & MQTT Log */}
-          <div className="border-t border-agri-ink/20 bg-[#121914] px-5 py-3.5 font-mono text-[11px] text-[#C8D4C5] sm:px-6">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-agri-bg/10 pb-2 text-[10px] uppercase tracking-[0.12em] text-agri-bg/55">
-              <span>SERIAL 115200 BAUD · OUTPUT SIMULASI FIRMWARE</span>
-              <span>
-                broker.hivemq.com:1883 · idtc2026/glagah/{nodeId}/data
-              </span>
+      {/* Minimalist Serial Monitor & MQTT Log (shared across 3D Model & Schematic) */}
+      {(activeTab === "model3d" || activeTab === "schematic") && (
+        <div className="border-t border-agri-ink/20 bg-[#121914] px-5 py-3.5 font-mono text-[11px] text-[#C8D4C5] sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-agri-bg/10 pb-2 text-[10px] uppercase tracking-[0.12em] text-agri-bg/55">
+            <span>SERIAL 115200 BAUD · OUTPUT SIMULASI FIRMWARE</span>
+            <span>
+              broker.hivemq.com:1883 · idtc2026/glagah/{nodeId}/data
+            </span>
+          </div>
+          <div className="mt-2.5 space-y-1.5 overflow-x-auto whitespace-nowrap">
+            <div className="text-[#BFD9B7]">
+              Tumpuk={liveState.coreTemp.toFixed(1)}C Udara=
+              {liveState.ambientTemp.toFixed(1)}C Hum=
+              {Math.round(liveState.ambientHum)}% Delta=
+              {liveState.delta.toFixed(1)} Tren=
+              {liveState.trend >= 0 ? "+" : ""}
+              {liveState.trend.toFixed(1)} Skor={liveState.score} Kelas=
+              {liveState.hardwareClass} | Wi-Fi:ya MQTT:ya
             </div>
-            <div className="mt-2.5 space-y-1.5 overflow-x-auto whitespace-nowrap">
-              <div className="text-[#BFD9B7]">
-                Tumpuk={liveState.coreTemp.toFixed(1)}C Udara=
-                {liveState.ambientTemp.toFixed(1)}C Hum=
-                {Math.round(liveState.ambientHum)}% Delta=
-                {liveState.delta.toFixed(1)} Tren=
-                {liveState.trend >= 0 ? "+" : ""}
-                {liveState.trend.toFixed(1)} Skor={liveState.score} Kelas=
-                {liveState.hardwareClass} | Wi-Fi:ya MQTT:ya
+            {isBuzzerAlert && (
+              <div className="flex items-center gap-1.5 font-semibold text-[#E89B7C]">
+                <Volume2 className="h-3.5 w-3.5 shrink-0" />
+                <span>
+                  [ALARM] suhu tumpukan tinggi (&ge;60.0C) — periksa tumpukan
+                  [Buzzer 2x 400ms]
+                </span>
               </div>
-              {isBuzzerAlert && (
-                <div className="flex items-center gap-1.5 font-semibold text-[#E89B7C]">
-                  <Volume2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>
-                    [ALARM] suhu tumpukan tinggi (&ge;60.0C) — periksa tumpukan
-                    [Buzzer 2x 400ms]
-                  </span>
-                </div>
-              )}
-              <div className="text-agri-bg/65">
-                [MQTT] kirim OK: {mqttJson}
-              </div>
+            )}
+            <div className="text-agri-bg/65">
+              [MQTT] kirim OK: {mqttJson}
             </div>
           </div>
         </div>
