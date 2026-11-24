@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: glagahsmart-aiot-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python ml/train.py
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ENVIRONMENT
+        value: production
+      - key: API_DOCS_ENABLED
+        value: "true"
+      - key: CORS_ORIGINS
+        sync: false

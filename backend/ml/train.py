@@ -17,7 +17,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 
-from dataset_generator import generate_glagah_dataset
+try:
+    from ml.dataset_generator import generate_glagah_dataset
+except ImportError:
+    from dataset_generator import generate_glagah_dataset
 
 FEATURE_COLUMNS = [
     "ambient_temperature_c",
@@ -30,11 +33,9 @@ FEATURE_COLUMNS = [
 
 TARGET_COLUMN = "target_class"
 
-def train_and_evaluate():
+def train_and_evaluate(save_to_disk: bool = True):
     models_dir = os.path.join(os.path.dirname(__file__), "models")
     data_dir = os.path.join(os.path.dirname(__file__), "data")
-    os.makedirs(models_dir, exist_ok=True)
-    os.makedirs(data_dir, exist_ok=True)
 
     csv_path = os.path.join(data_dir, "glagah_synthetic_dataset.csv")
     if os.path.exists(csv_path):
@@ -43,7 +44,9 @@ def train_and_evaluate():
     else:
         print("[TRAIN] Menghasilkan dataset baru...")
         df = generate_glagah_dataset(1200)
-        df.to_csv(csv_path, index=False)
+        if save_to_disk:
+            os.makedirs(data_dir, exist_ok=True)
+            df.to_csv(csv_path, index=False)
 
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN]
@@ -81,12 +84,6 @@ def train_and_evaluate():
     rf_importance = dict(zip(FEATURE_COLUMNS, [round(float(v), 4) for v in rf_model.feature_importances_]))
     dt_importance = dict(zip(FEATURE_COLUMNS, [round(float(v), 4) for v in dt_model.feature_importances_]))
 
-    # Simpan binary model
-    rf_path = os.path.join(models_dir, "random_forest_model.joblib")
-    dt_path = os.path.join(models_dir, "decision_tree_model.joblib")
-    joblib.dump(rf_model, rf_path)
-    joblib.dump(dt_model, dt_path)
-
     # Simpan metrik dan perbandingan
     metrics = {
         "dataset_info": {
@@ -109,9 +106,20 @@ def train_and_evaluate():
         }
     }
 
-    metrics_path = os.path.join(models_dir, "model_metrics.json")
-    with open(metrics_path, "w", encoding="utf-8") as f:
-        json.dump(metrics, f, indent=2, ensure_ascii=False)
+    if save_to_disk:
+        try:
+            os.makedirs(models_dir, exist_ok=True)
+            rf_path = os.path.join(models_dir, "random_forest_model.joblib")
+            dt_path = os.path.join(models_dir, "decision_tree_model.joblib")
+            joblib.dump(rf_model, rf_path)
+            joblib.dump(dt_model, dt_path)
+
+            metrics_path = os.path.join(models_dir, "model_metrics.json")
+            with open(metrics_path, "w", encoding="utf-8") as f:
+                json.dump(metrics, f, indent=2, ensure_ascii=False)
+            print(f"\n[OK] Model berhasil disimpan di: {models_dir}")
+        except OSError as exc:
+            print(f"\n[WARN] Tidak dapat menyimpan model ke disk ({exc}); menggunakan model di memori.")
 
     print("\n================ HASIL EVALUASI ================")
     print(f"Random Forest Accuracy : {rf_acc * 100:.2f}%")
@@ -119,7 +127,8 @@ def train_and_evaluate():
     print("\nFeature Importances (Random Forest):")
     for feat, imp in sorted(rf_importance.items(), key=lambda x: x[1], reverse=True):
         print(f" - {feat:25s}: {imp * 100:.2f}%")
-    print(f"\n[OK] Model berhasil disimpan di: {models_dir}")
+
+    return rf_model, dt_model, metrics
 
 if __name__ == "__main__":
     train_and_evaluate()

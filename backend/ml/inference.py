@@ -5,9 +5,16 @@ IDTC 2.0 - AIoT Future Competition 2026
 
 import os
 import json
+import warnings
 import joblib
 import pandas as pd
+import sklearn
 from typing import Dict, Any, List
+
+try:
+    from ml.train import train_and_evaluate
+except ImportError:
+    from train import train_and_evaluate
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 RF_MODEL_PATH = os.path.join(MODELS_DIR, "random_forest_model.joblib")
@@ -19,15 +26,58 @@ _rf_model = None
 _dt_model = None
 _metrics_data = None
 
+
+def _get_saved_sklearn_version(estimator: Any) -> str | None:
+    direct = getattr(estimator, "_sklearn_version", None)
+    if direct:
+        return str(direct)
+    if hasattr(estimator, "__getstate__"):
+        state = estimator.__getstate__()
+        if isinstance(state, dict) and "_sklearn_version" in state:
+            return str(state["_sklearn_version"])
+    return None
+
+
+def _is_sklearn_version_compatible(estimator: Any) -> bool:
+    return _get_saved_sklearn_version(estimator) == sklearn.__version__
+
+
 def get_models():
     global _rf_model, _dt_model, _metrics_data
-    if _rf_model is None and os.path.exists(RF_MODEL_PATH):
-        _rf_model = joblib.load(RF_MODEL_PATH)
-    if _dt_model is None and os.path.exists(DT_MODEL_PATH):
-        _dt_model = joblib.load(DT_MODEL_PATH)
-    if _metrics_data is None and os.path.exists(METRICS_PATH):
-        with open(METRICS_PATH, "r", encoding="utf-8") as f:
-            _metrics_data = json.load(f)
+    if _rf_model is not None and _dt_model is not None and _metrics_data is not None:
+        return _rf_model, _dt_model, _metrics_data
+
+    needs_retrain = False
+    try:
+        if os.path.exists(RF_MODEL_PATH) and os.path.exists(DT_MODEL_PATH):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                loaded_rf = joblib.load(RF_MODEL_PATH)
+                loaded_dt = joblib.load(DT_MODEL_PATH)
+            if _is_sklearn_version_compatible(loaded_rf) and _is_sklearn_version_compatible(loaded_dt):
+                _rf_model = loaded_rf
+                _dt_model = loaded_dt
+            else:
+                print(
+                    f"[ML] Versi scikit-learn model ({_get_saved_sklearn_version(loaded_rf) or 'unknown'}) "
+                    f"berbeda dengan runtime ({sklearn.__version__}); melatih ulang model..."
+                )
+                needs_retrain = True
+        else:
+            needs_retrain = True
+
+        if os.path.exists(METRICS_PATH):
+            with open(METRICS_PATH, "r", encoding="utf-8") as f:
+                _metrics_data = json.load(f)
+        else:
+            needs_retrain = True
+    except Exception as exc:
+        print(f"[ML] Gagal memuat model joblib ({exc}); melatih ulang model secara otomatis...")
+        needs_retrain = True
+
+    if needs_retrain:
+        _rf_model, _dt_model, _metrics_data = train_and_evaluate(save_to_disk=True)
+
     return _rf_model, _dt_model, _metrics_data
 
 def generate_scientific_explanation(
