@@ -1,33 +1,59 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, GraduationCap, Building2, FileText, Cpu, Globe, CheckCircle2 } from "lucide-react";
 import DossierHeader from "@/components/layout/DossierHeader";
 
-const teamMembers = [
+interface TeamMember {
+  name: string;
+  role: string;
+  badge: string;
+  institution: string;
+  focus: string;
+  contributions: string[];
+}
+
+const teamMembers: TeamMember[] = [
   {
-    role: "System Analyst & Lead Researcher",
+    name: "Riska Yuliyanti",
+    role: "Team Lead & Proposal Strategist",
+    badge: "Ketua Tim",
+    institution: "UIN K.H. Abdurrahman Wahid Pekalongan",
     focus:
-      "Kajian rantai pasok glagah Pemalang–Purbalingga, perumusan metodologi, dan formulasi batasan SNI.",
+      "Kepemimpinan tim inovasi Nox Labs, formulasi naskah proposal ilmiah GLAGORA, perumusan business case brief ekonomi sirkular, dan penyelarasan dokumen kompetisi.",
+    contributions: [
+      "Perumusan business case brief dan identifikasi masalah limbah bunga glagah",
+      "Penyusunan naskah proposal ilmiah, estimasi biaya, dan studi kelayakan ekonomi",
+      "Penyelarasan narasi inovasi dengan kriteria penilaian dewan juri",
+      "Koordinasi linimasa pengerjaan proyek dan komunikasi tim Nox Labs",
+    ],
   },
   {
+    name: "Abdul Muhis",
     role: "IoT & Embedded Systems Engineer",
+    badge: "Hardware & Firmware",
+    institution: "UIN K.H. Abdurrahman Wahid Pekalongan",
     focus:
-      "Perancangan firmware ESP32 Wokwi, sensor DHT22 & DS18B20, kalibrasi sinyal, dan transmisi HTTP/MQTT.",
+      "Perancangan node pemantau berbasis ESP32-CAM dalam wadah sampel berpenutup, integrasi sensor DHT22 & probe DS18B20, serta logika peringatan lokal.",
+    contributions: [
+      "Perancangan arsitektur node perangkat keras berbasis ESP32-CAM",
+      "Pengkondisian jalur data sensor: DHT22 (GPIO13) dan bus 1-wire DS18B20 (GPIO14)",
+      "Penerapan sistem umpan balik lokal mandiri: LED indikator (GPIO2) dan buzzer aktif (GPIO15)",
+      "Desain tata letak komponen wadah sampel berpenutup dengan kamera overhead",
+    ],
   },
   {
-    role: "Machine Learning Engineer",
+    name: "Ahmad Turmudi",
+    role: "Full-Stack Developer & AI Systems Engineer",
+    badge: "Web Dev & AI/ML",
+    institution: "UIN K.H. Abdurrahman Wahid Pekalongan",
     focus:
-      "Pengembangan dataset terstandar, pelatihan Random Forest & Decision Tree scikit-learn, serta explainability.",
-  },
-  {
-    role: "Full-Stack Software Engineer",
-    focus:
-      "Pengembangan REST API FastAPI asynchronous, validasi Pydantic v2, dan antarmuka Next.js TypeScript.",
-  },
-  {
-    role: "Agritechnology & UI/UX Specialist",
-    focus:
-      "Karakterisasi biomassa, desain interaksi pengguna, komunikasi ilmiah, dan aksesibilitas antarmuka.",
+      "Pengembangan web dashboard Next.js, arsitektur backend FastAPI & SQLite, perancangan model Machine Learning & Deep Learning, serta integrasi Sensor & Vision Fusion.",
+    contributions: [
+      "Pengembangan antarmuka web dashboard interaktif dan field dossier Next.js 14",
+      "Arsitektur server REST API FastAPI, validasi Pydantic v2, dan database SQLite",
+      "Perancangan model ganda: Machine Learning data sensor & Deep Learning citra kamera",
+      "Implementasi matriks Sensor & Vision Fusion serta penanganan status 'Perlu Verifikasi'",
+    ],
   },
 ];
 
@@ -35,22 +61,22 @@ const roadmap = [
   {
     year: "2026",
     phase: "Fase saat ini",
-    title: "Proof of Concept & Validasi Laboratorium Terpadu",
-    desc: "Finalisasi prototipe AIoT Wokwi dan Machine Learning untuk kompetisi IDTC 2.0, dilanjutkan dengan pengujian sampel fisik di laboratorium benih dan biomassa.",
+    title: "Proof of Concept & Validasi Skala Rumah Tangga",
+    desc: "Finalisasi purwarupa AIoT GLAGORA (ESP32-CAM, DHT22, DS18B20) dan permodelan Sensor-Vision Fusion untuk studi kasus Desa Tlagasana, Watukumpul, Pemalang.",
     status: "Berlangsung",
   },
   {
     year: "2027",
     phase: "Fase fabrikasi",
-    title: "Fabrikasi Hardware Fisik & Pilot Sortasi Konveyor",
-    desc: "Implementasi hardware ESP32 fisik dengan enclosure industri (IP65) dan perancangan konveyor pemilah mekanis di salah satu bengkel pengrajin Purbalingga.",
+    title: "Fabrikasi Wadah Terstandar & Pengujian BUMDes",
+    desc: "Produksi wadah sampel berpenutup terstandar dengan pencahayaan LED seragam dan implementasi percontohan pada kelompok tani atau BUMDes Desa Tlagasana.",
     status: "Direncanakan",
   },
   {
     year: "2028",
     phase: "Fase scale-up",
-    title: "Kemitraan Koperasi & Unit Usaha Briket Sirkular",
-    desc: "Replikasi sistem ke sentra kerajinan sapu di Bojongsari dan Karangreja, serta pendirian unit produksi briket biomassa berbasis koperasi desa.",
+    title: "Kemitraan Koperasi & Unit Usaha Kompos/Briket Mandiri",
+    desc: "Ekspansi adopsi sistem ke sentra glagah di Jawa Tengah serta hilirisasi produk pupuk organik dan briket biomassa bernilai ekonomi tinggi.",
     status: "Direncanakan",
   },
 ];
@@ -62,73 +88,129 @@ export default function AboutPage() {
         eyebrow="Profil inovasi & tim"
         title={
           <>
-            Tim lintas disiplin{" "}
-            <span className="text-agri-primary">di balik GlagahSmart.</span>
+            Nox Labs{" "}
+            <span className="text-agri-primary">di balik GLAGORA.</span>
           </>
         }
-        summary="Kolaborasi riset agriteknologi, rekayasa perangkat tertanam, pembelajaran mesin tabular, dan pengembangan web untuk hilirisasi residu glagah Jawa Tengah."
+        summary="Kolaborasi riset agriteknologi terapan, rekayasa perangkat tertanam ESP32-CAM, sistem kecerdasan buatan hibrida, dan pengembangan web dari UIN K.H. Abdurrahman Wahid Pekalongan."
         maxWidthClass="max-w-6xl"
       />
 
       <div className="mx-auto max-w-6xl space-y-16 px-4 pt-10 sm:px-6 lg:px-8">
-        {/* Competition Dossier Block */}
+        {/* Project & Institution Dossier Block */}
         <section className="border border-agri-ink/25 bg-agri-dark p-6 text-agri-bg sm:p-9">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-agri-bg/15 pb-4 font-mono text-[11px] uppercase tracking-[0.14em]">
-            <span className="text-agri-emeraldLight">Kompetisi resmi</span>
-            <span className="text-agri-bg/70">Penyelenggaraan · 2026</span>
+            <div className="flex items-center gap-2 text-agri-emeraldLight">
+              <Building2 className="h-4 w-4" />
+              <span>Nox Labs · UIN K.H. Abdurrahman Wahid Pekalongan</span>
+            </div>
+            <span className="text-agri-bg/70">IDTC 2.0 · 2026</span>
           </div>
 
-          <div className="mt-6 max-w-3xl space-y-3">
-            <h2 className="display-serif text-3xl text-white sm:text-5xl">
-              IDTC 2.0 – AIoT Future Competition 2026
+          <div className="mt-6 max-w-4xl space-y-3">
+            <div className="inline-block border border-agri-emeraldLight/30 bg-agri-primary/40 px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-agri-emeraldLight">
+              Judul Proposal Inovasi
+            </div>
+            <h2 className="display-serif text-2xl text-white sm:text-4xl">
+              GLAGORA: Smart Biomass Management Sebagai Solusi Inovatif Pengelolaan Limbah Bunga Glagah Berorientasi Ekonomi Sirkular
             </h2>
             <p className="text-sm leading-7 text-agri-bg/80">
-              Dikembangkan sebagai karya riset terapan pada kategori{" "}
-              <strong className="text-white">
-                Agriteknologi &amp; AIoT Terapan
-              </strong>
-              , dengan studi kasus sentra kerajinan sapu glagah Kabupaten
-              Pemalang dan Kabupaten Purbalingga, Jawa Tengah.
+              Dikembangkan sebagai solusi AIoT skala rumah tangga untuk petani dan pekebun di{" "}
+              <strong className="text-white">Dusun Tlaga Tengah, Desa Tlagasana, Kec. Watukumpul, Kab. Pemalang</strong>. 
+              Sistem memadukan pembacaan kondisi fisik material (DHT22 &amp; DS18B20) dan analisis visual citra (ESP32-CAM) melalui pendekatan{" "}
+              <strong className="text-white">Sensor &amp; Vision Fusion</strong> guna merekomendasikan tiga jalur hilirisasi: Kompos, Bahan Baku Briket, atau Pemisahan Benih.
             </p>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 border-t border-agri-bg/15 pt-4 font-mono text-xs text-agri-bg/70">
-            <span>
-              Fokus: <strong className="text-agri-bg">AIoT Profiling &amp; Verification</strong>
-            </span>
-            <span>
-              Status: <strong className="text-agri-bg">Research-Based Prototype (PoC)</strong>
-            </span>
+          <div className="mt-6 grid grid-cols-2 gap-4 border-t border-agri-bg/15 pt-4 font-mono text-xs text-agri-bg/70 sm:grid-cols-4">
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-agri-bg/50">Tim Pengembang</span>
+              <strong className="text-white">Nox Labs</strong>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-agri-bg/50">Asal Instansi</span>
+              <strong className="text-white">UIN Gus Dur Pekalongan</strong>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-agri-bg/50">Lokus Sasaran</span>
+              <strong className="text-white">Desa Tlagasana, Pemalang</strong>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-agri-bg/50">Status Kesiapan</span>
+              <strong className="text-agri-emeraldLight">PoC &amp; Dual AI Modeling</strong>
+            </div>
           </div>
         </section>
 
-        {/* Interdisciplinary Team Directory */}
-        <section className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr]">
-          <div className="space-y-2">
+        {/* Team Directory (3 Members) */}
+        <section className="space-y-8">
+          <div className="border-b border-agri-primary/20 pb-4">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
-              Struktur peran
+              Struktur Tim Pengembang
             </p>
-            <h2 className="display-serif text-3xl leading-tight text-agri-ink sm:text-4xl">
-              Lima pilar kompetensi tim.
+            <h2 className="display-serif mt-1 text-3xl leading-tight text-agri-ink sm:text-4xl">
+              Anggota Tim Nox Labs.
             </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-agri-muted">
+              Tiga pilar kompetensi lintas disiplin yang bertanggung jawab atas formulasi strategi proposal, rekayasa perangkat keras IoT, dan arsitektur perangkat lunak kecerdasan buatan.
+            </p>
           </div>
 
-          <div className="divide-y divide-agri-primary/15 border-y border-agri-primary/20 bg-white/65">
-            {teamMembers.map((m, idx) => (
-              <div
-                key={m.role}
-                className="grid gap-2 px-5 py-4 sm:grid-cols-[3rem_1fr]"
+          <div className="grid gap-6 md:grid-cols-3">
+            {teamMembers.map((member, idx) => (
+              <article
+                key={member.name}
+                className="paper-panel flex flex-col justify-between p-6 transition-all duration-200 hover:border-agri-primary/40 hover:shadow-elevated"
               >
-                <span className="display-serif text-2xl leading-none text-agri-clay">
-                  0{idx + 1}
-                </span>
                 <div>
-                  <h3 className="text-sm font-bold text-agri-ink">{m.role}</h3>
-                  <p className="mt-1 text-xs leading-6 text-agri-muted">
-                    {m.focus}
+                  <div className="flex items-center justify-between border-b border-agri-primary/15 pb-3">
+                    <span className="font-mono text-xs font-bold text-agri-clay">
+                      MEMBER 0{idx + 1}
+                    </span>
+                    <span className="border border-agri-primary/20 bg-agri-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-agri-primary">
+                      {member.badge}
+                    </span>
+                  </div>
+
+                  <div className="mt-4">
+                    <h3 className="display-serif text-2xl text-agri-ink">
+                      {member.name}
+                    </h3>
+                    <p className="mt-1 font-mono text-xs font-bold text-agri-primary">
+                      {member.role}
+                    </p>
+                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-agri-muted">
+                      <GraduationCap className="h-3.5 w-3.5 shrink-0 text-agri-clay" />
+                      <span>{member.institution}</span>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 border-t border-agri-primary/10 pt-3 text-xs leading-5 text-agri-muted">
+                    {member.focus}
                   </p>
+
+                  <div className="mt-4 space-y-2 border-t border-agri-primary/10 pt-3">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-agri-ink">
+                      Fokus Kontribusi:
+                    </p>
+                    <ul className="space-y-1.5">
+                      {member.contributions.map((c, cIdx) => (
+                        <li
+                          key={cIdx}
+                          className="flex items-start gap-1.5 text-[11px] leading-4 text-agri-ink/80"
+                        >
+                          <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-agri-primary" />
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
+
+                <div className="mt-6 border-t border-agri-primary/15 pt-3 font-mono text-[10px] uppercase tracking-wider text-agri-muted">
+                  Nox Labs · GLAGORA Core Team
+                </div>
+              </article>
             ))}
           </div>
         </section>
@@ -137,11 +219,14 @@ export default function AboutPage() {
         <section className="grid gap-8 border-t border-agri-primary/20 pt-10 lg:grid-cols-[0.65fr_1.35fr]">
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-agri-clay">
-              Peta jalan
+              Peta jalan inovasi
             </p>
             <h2 className="display-serif text-3xl leading-tight text-agri-ink sm:text-4xl">
-              Evolusi dari purwarupa menuju adopsi UMKM.
+              Dari skala rumah tangga menuju adopsi BUMDes.
             </h2>
+            <p className="text-xs leading-6 text-agri-muted sm:text-sm">
+              Tahapan implementasi GLAGORA yang dirancang realistis dan bertahap berdasarkan profil petani di Desa Tlagasana, Watukumpul, Pemalang.
+            </p>
           </div>
 
           <div className="divide-y divide-agri-primary/15 border-y border-agri-primary/20">
@@ -203,7 +288,7 @@ export default function AboutPage() {
                 href="/classification"
                 className="inline-flex min-h-11 items-center gap-2 border border-white/40 px-5 text-xs font-bold text-white hover:bg-white/10 sm:text-sm"
               >
-                <span>Klasifikasi ML</span>
+                <span>Uji Sampel Fusion</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
